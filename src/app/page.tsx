@@ -6,13 +6,13 @@ import {
   Clock,
   Users,
   ShieldCheck,
-  CheckCircle2,
   Lock,
   Layers,
   Sparkles,
+  Award,
 } from "lucide-react";
 import { getPublicBoards, getParticipantsByBoardId } from "@/lib/storage";
-import { formatScore, getTimeRemaining } from "@/lib/utils";
+import { getTimeRemaining } from "@/lib/utils";
 
 export default async function HomePage() {
   const boards = await getPublicBoards();
@@ -31,68 +31,68 @@ export default async function HomePage() {
   );
 
   return (
-    <div className="space-y-12 pb-16 animate-in fade-in duration-300">
+    <div className="space-y-12 pb-16 animate-in fade-in duration-300 max-w-5xl mx-auto">
       {/* Hero Section */}
-      <section className="relative pt-6 sm:pt-12 text-center max-w-4xl mx-auto space-y-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-950/80 border border-cyan-500/30 text-cyan-300 text-xs font-semibold shadow-inner shadow-cyan-500/10">
-          <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-          <span>Universal Leaderboard & Auction Priority Queue</span>
+      <section className="relative pt-6 sm:pt-10 text-center max-w-3xl mx-auto space-y-6">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-amber-300 text-xs font-semibold shadow-inner">
+          <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+          <span>Universal Leaderboard & SubSecond Priority Platform</span>
         </div>
 
         <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white leading-tight">
           Papan Peringkat Modular &{" "}
-          <span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 bg-clip-text text-transparent">
             SubSecond Priority Queue
           </span>
         </h1>
 
-        <p className="text-slate-300 text-sm sm:text-lg max-w-2xl mx-auto leading-relaxed">
-          Platform leaderboard serbaguna untuk lelang urutan eksekusi bot SubSecond, turnamen pemrograman, antrean audit prioritas, dan voting dengan sinkronisasi API instan.
+        <p className="text-slate-300 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
+          Platform leaderboard universal dengan desain Apple 3D cylindrical podium untuk lelang antrean bot SubSecond, turnamen pemrograman, dan voting.
         </p>
 
         {/* Action Buttons */}
         <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
           <Link
             href="/board/lelang-subsecond-w10"
-            className="px-6 py-3 rounded-2xl text-sm font-bold bg-gradient-to-r from-cyan-500 via-sky-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-slate-950 shadow-xl shadow-cyan-500/25 flex items-center gap-2 transition-all hover:scale-105 cursor-pointer"
+            className="px-6 py-3 rounded-full text-sm font-bold bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-yellow-300 text-slate-950 shadow-xl shadow-amber-400/25 flex items-center gap-2 transition-all hover:scale-105 cursor-pointer"
           >
-            <Zap className="w-4 h-4 text-slate-950 fill-slate-950" />
-            <span>Lelang SubSecond W10</span>
+            <Trophy className="w-4 h-4 text-slate-950 fill-slate-950" />
+            <span>Lihat Lelang SubSecond W10</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
 
           <Link
             href="/admin"
-            className="px-6 py-3 rounded-2xl text-sm font-semibold bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 hover:border-slate-500 text-slate-200 flex items-center gap-2 transition-all cursor-pointer"
+            className="px-6 py-3 rounded-full text-sm font-semibold bg-white/10 hover:bg-white/15 border border-white/10 text-white flex items-center gap-2 transition-all cursor-pointer backdrop-blur-md"
           >
             <ShieldCheck className="w-4 h-4 text-amber-400" />
-            <span>Panel Admin & Buat Papan</span>
+            <span>Panel Admin</span>
           </Link>
         </div>
 
         {/* Feature Badges */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-8 text-left">
-          <div className="p-3.5 rounded-2xl glass-card border border-slate-800/80">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 text-left">
+          <div className="p-4 rounded-3xl glass-card border border-white/10">
             <span className="text-[11px] text-slate-400 block">Sorting Logic</span>
-            <span className="text-xs font-bold text-slate-200 mt-0.5 block">
+            <span className="text-xs font-bold text-white mt-0.5 block">
               Ascending & Descending
             </span>
           </div>
-          <div className="p-3.5 rounded-2xl glass-card border border-slate-800/80">
-            <span className="text-[11px] text-slate-400 block">Unit Serbaguna</span>
-            <span className="text-xs font-bold text-slate-200 mt-0.5 block">
+          <div className="p-4 rounded-3xl glass-card border border-white/10">
+            <span className="text-[11px] text-slate-400 block">Unit Format</span>
+            <span className="text-xs font-bold text-white mt-0.5 block">
               Rupiah, ms, Skor, Custom
             </span>
           </div>
-          <div className="p-3.5 rounded-2xl glass-card border border-slate-800/80">
+          <div className="p-4 rounded-3xl glass-card border border-white/10">
             <span className="text-[11px] text-slate-400 block">Bot Sync</span>
-            <span className="text-xs font-bold text-cyan-300 mt-0.5 block">
+            <span className="text-xs font-bold text-amber-400 mt-0.5 block">
               Cloudflare Worker Ready
             </span>
           </div>
-          <div className="p-3.5 rounded-2xl glass-card border border-slate-800/80">
+          <div className="p-4 rounded-3xl glass-card border border-white/10">
             <span className="text-[11px] text-slate-400 block">Privasi Peserta</span>
-            <span className="text-xs font-bold text-slate-200 mt-0.5 block">
+            <span className="text-xs font-bold text-white mt-0.5 block">
               Sensor NIM Otomatis
             </span>
           </div>
@@ -100,39 +100,36 @@ export default async function HomePage() {
       </section>
 
       {/* Boards Directory */}
-      <section className="space-y-6">
-        <div className="flex items-center justify-between">
+      <section className="space-y-5">
+        <div className="flex items-center justify-between px-1">
           <div>
             <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2">
-              <Layers className="w-6 h-6 text-cyan-400" />
-              Daftar Papan Peringkat Aktif
+              <Layers className="w-5 h-5 text-amber-400" />
+              Papan Peringkat Aktif
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
-              Pilih board di bawah untuk melihat podium peringkat atau berpartisipasi
+              Pilih papan di bawah untuk melihat podium peringkat 3D atau berpartisipasi
             </p>
           </div>
 
-          <span className="text-xs px-2.5 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-400 font-mono">
-            {boardsWithStats.length} Boards Terdaftar
+          <span className="text-xs px-3 py-1 rounded-full bg-white/5 border border-white/10 text-slate-400 font-mono">
+            {boardsWithStats.length} Boards
           </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {boardsWithStats.map((board) => {
             const time = board.deadline ? getTimeRemaining(board.deadline) : null;
 
             return (
               <div
                 key={board.id}
-                className="group p-6 rounded-3xl glass-panel border border-slate-800/80 hover:border-cyan-500/50 transition-all flex flex-col justify-between relative overflow-hidden"
+                className="group p-6 rounded-[32px] glass-panel border border-white/10 hover:border-amber-400/40 transition-all flex flex-col justify-between relative overflow-hidden shadow-lg"
               >
-                {/* Accent glow on hover */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/0 group-hover:bg-cyan-500/10 rounded-full blur-2xl transition-all pointer-events-none" />
-
                 <div className="space-y-4">
                   {/* Top Badges */}
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-950 border border-slate-800 text-slate-400">
+                    <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-black/40 border border-white/10 text-amber-300">
                       /{board.slug}
                     </span>
 
@@ -151,7 +148,7 @@ export default async function HomePage() {
 
                   {/* Title & Desc */}
                   <div>
-                    <h3 className="text-lg font-bold text-white group-hover:text-cyan-300 transition-colors line-clamp-1">
+                    <h3 className="text-lg font-bold text-white group-hover:text-amber-300 transition-colors line-clamp-1">
                       {board.title}
                     </h3>
                     <p className="text-xs text-slate-400 mt-1 line-clamp-2 leading-relaxed">
@@ -161,7 +158,7 @@ export default async function HomePage() {
 
                   {/* Stats & Meta */}
                   <div className="pt-2 grid grid-cols-2 gap-2 text-xs">
-                    <div className="p-2 rounded-xl bg-slate-950/70 border border-slate-800/60 flex items-center gap-2">
+                    <div className="p-2.5 rounded-2xl bg-black/30 border border-white/5 flex items-center gap-2">
                       <Users className="w-4 h-4 text-slate-400" />
                       <div>
                         <span className="text-[10px] text-slate-500 block">Peserta</span>
@@ -171,12 +168,12 @@ export default async function HomePage() {
                       </div>
                     </div>
 
-                    <div className="p-2 rounded-xl bg-slate-950/70 border border-slate-800/60 flex items-center gap-2">
+                    <div className="p-2.5 rounded-2xl bg-black/30 border border-white/5 flex items-center gap-2">
                       <Clock className="w-4 h-4 text-slate-400" />
                       <div>
-                        <span className="text-[10px] text-slate-500 block">Status Waktu</span>
+                        <span className="text-[10px] text-slate-500 block">Deadline</span>
                         <span className="font-bold text-slate-200">
-                          {time ? (time.isExpired ? "Berakhir" : `${time.days}h ${time.hours}j`) : "Aktif"}
+                          {time ? (time.isExpired ? "Berakhir" : `${time.days}h ${time.hours}j`) : "Terbuka"}
                         </span>
                       </div>
                     </div>
@@ -184,10 +181,10 @@ export default async function HomePage() {
                 </div>
 
                 {/* Footer Action */}
-                <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between">
+                <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between">
                   <span className="text-[11px] font-semibold text-slate-400">
                     Format:{" "}
-                    <span className="text-cyan-400">
+                    <span className="text-amber-400">
                       {board.unitType === "CURRENCY_IDR"
                         ? "Rupiah (Rp)"
                         : board.unitType === "MILLISECONDS"
@@ -198,9 +195,9 @@ export default async function HomePage() {
 
                   <Link
                     href={`/board/${board.slug}`}
-                    className="inline-flex items-center gap-1.5 text-xs font-bold text-cyan-400 hover:text-cyan-300 transition-colors group-hover:translate-x-0.5"
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-400 hover:text-amber-300 transition-colors group-hover:translate-x-1"
                   >
-                    <span>Buka Klasemen</span>
+                    <span>Buka Podium</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>
