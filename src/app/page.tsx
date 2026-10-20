@@ -1,69 +1,214 @@
-import Image from "next/image";
+import Link from "next/link";
+import {
+  Trophy,
+  Zap,
+  ArrowRight,
+  Clock,
+  Users,
+  ShieldCheck,
+  CheckCircle2,
+  Lock,
+  Layers,
+  Sparkles,
+} from "lucide-react";
+import { getPublicBoards, getParticipantsByBoardId } from "@/lib/storage";
+import { formatScore, getTimeRemaining } from "@/lib/utils";
 
-export default function Home() {
+export default async function HomePage() {
+  const boards = await getPublicBoards();
+
+  // Fetch participant stats for each board
+  const boardsWithStats = await Promise.all(
+    boards.map(async (board) => {
+      const participants = await getParticipantsByBoardId(board.id);
+      const verifiedCount = participants.filter((p) => p.status === "VERIFIED").length;
+      return {
+        ...board,
+        totalParticipants: participants.length,
+        verifiedCount,
+      };
+    })
+  );
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="space-y-12 pb-16 animate-in fade-in duration-300">
+      {/* Hero Section */}
+      <section className="relative pt-6 sm:pt-12 text-center max-w-4xl mx-auto space-y-6">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-950/80 border border-cyan-500/30 text-cyan-300 text-xs font-semibold shadow-inner shadow-cyan-500/10">
+          <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+          <span>Universal Leaderboard & Auction Priority Queue</span>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+        <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white leading-tight">
+          Papan Peringkat Modular &{" "}
+          <span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400 bg-clip-text text-transparent">
+            SubSecond Priority Queue
+          </span>
+        </h1>
+
+        <p className="text-slate-300 text-sm sm:text-lg max-w-2xl mx-auto leading-relaxed">
+          Platform leaderboard serbaguna untuk lelang urutan eksekusi bot SubSecond, turnamen pemrograman, antrean audit prioritas, dan voting dengan sinkronisasi API instan.
+        </p>
+
+        {/* Action Buttons */}
+        <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+          <Link
+            href="/board/lelang-subsecond-w10"
+            className="px-6 py-3 rounded-2xl text-sm font-bold bg-gradient-to-r from-cyan-500 via-sky-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-slate-950 shadow-xl shadow-cyan-500/25 flex items-center gap-2 transition-all hover:scale-105 cursor-pointer"
           >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <Zap className="w-4 h-4 text-slate-950 fill-slate-950" />
+            <span>Lelang SubSecond W10</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+
+          <Link
+            href="/admin"
+            className="px-6 py-3 rounded-2xl text-sm font-semibold bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 hover:border-slate-500 text-slate-200 flex items-center gap-2 transition-all cursor-pointer"
           >
-            Documentation
-          </a>
+            <ShieldCheck className="w-4 h-4 text-amber-400" />
+            <span>Panel Admin & Buat Papan</span>
+          </Link>
         </div>
-      </main>
+
+        {/* Feature Badges */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-8 text-left">
+          <div className="p-3.5 rounded-2xl glass-card border border-slate-800/80">
+            <span className="text-[11px] text-slate-400 block">Sorting Logic</span>
+            <span className="text-xs font-bold text-slate-200 mt-0.5 block">
+              Ascending & Descending
+            </span>
+          </div>
+          <div className="p-3.5 rounded-2xl glass-card border border-slate-800/80">
+            <span className="text-[11px] text-slate-400 block">Unit Serbaguna</span>
+            <span className="text-xs font-bold text-slate-200 mt-0.5 block">
+              Rupiah, ms, Skor, Custom
+            </span>
+          </div>
+          <div className="p-3.5 rounded-2xl glass-card border border-slate-800/80">
+            <span className="text-[11px] text-slate-400 block">Bot Sync</span>
+            <span className="text-xs font-bold text-cyan-300 mt-0.5 block">
+              Cloudflare Worker Ready
+            </span>
+          </div>
+          <div className="p-3.5 rounded-2xl glass-card border border-slate-800/80">
+            <span className="text-[11px] text-slate-400 block">Privasi Peserta</span>
+            <span className="text-xs font-bold text-slate-200 mt-0.5 block">
+              Sensor NIM Otomatis
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* Boards Directory */}
+      <section className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2">
+              <Layers className="w-6 h-6 text-cyan-400" />
+              Daftar Papan Peringkat Aktif
+            </h2>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Pilih board di bawah untuk melihat podium peringkat atau berpartisipasi
+            </p>
+          </div>
+
+          <span className="text-xs px-2.5 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-400 font-mono">
+            {boardsWithStats.length} Boards Terdaftar
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {boardsWithStats.map((board) => {
+            const time = board.deadline ? getTimeRemaining(board.deadline) : null;
+
+            return (
+              <div
+                key={board.id}
+                className="group p-6 rounded-3xl glass-panel border border-slate-800/80 hover:border-cyan-500/50 transition-all flex flex-col justify-between relative overflow-hidden"
+              >
+                {/* Accent glow on hover */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/0 group-hover:bg-cyan-500/10 rounded-full blur-2xl transition-all pointer-events-none" />
+
+                <div className="space-y-4">
+                  {/* Top Badges */}
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-950 border border-slate-800 text-slate-400">
+                      /{board.slug}
+                    </span>
+
+                    {board.status === "ACTIVE" ? (
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-950/70 text-emerald-300 border border-emerald-500/30">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        ACTIVE
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-950/70 text-rose-300 border border-rose-500/30">
+                        <Lock className="w-3 h-3 text-rose-400" />
+                        LOCKED
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Title & Desc */}
+                  <div>
+                    <h3 className="text-lg font-bold text-white group-hover:text-cyan-300 transition-colors line-clamp-1">
+                      {board.title}
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-1 line-clamp-2 leading-relaxed">
+                      {board.description}
+                    </p>
+                  </div>
+
+                  {/* Stats & Meta */}
+                  <div className="pt-2 grid grid-cols-2 gap-2 text-xs">
+                    <div className="p-2 rounded-xl bg-slate-950/70 border border-slate-800/60 flex items-center gap-2">
+                      <Users className="w-4 h-4 text-slate-400" />
+                      <div>
+                        <span className="text-[10px] text-slate-500 block">Peserta</span>
+                        <span className="font-bold text-slate-200">
+                          {board.totalParticipants} ({board.verifiedCount} Lunas)
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="p-2 rounded-xl bg-slate-950/70 border border-slate-800/60 flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-slate-400" />
+                      <div>
+                        <span className="text-[10px] text-slate-500 block">Status Waktu</span>
+                        <span className="font-bold text-slate-200">
+                          {time ? (time.isExpired ? "Berakhir" : `${time.days}h ${time.hours}j`) : "Aktif"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer Action */}
+                <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between">
+                  <span className="text-[11px] font-semibold text-slate-400">
+                    Format:{" "}
+                    <span className="text-cyan-400">
+                      {board.unitType === "CURRENCY_IDR"
+                        ? "Rupiah (Rp)"
+                        : board.unitType === "MILLISECONDS"
+                        ? "Milidetik (ms)"
+                        : "Skor / Poin"}
+                    </span>
+                  </span>
+
+                  <Link
+                    href={`/board/${board.slug}`}
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-cyan-400 hover:text-cyan-300 transition-colors group-hover:translate-x-0.5"
+                  >
+                    <span>Buka Klasemen</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
     </div>
   );
 }
