@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #090d16;
+  --background: #070a12;
   --foreground: #f1f5f9;
 }
 
@@ -11,38 +11,286 @@ body {
   min-height: 100vh;
 }
 
-/* Glassmorphism helpers */
+/* Apple-style Glassmorphism & Translucent Materials */
 .glass-panel {
-  background: rgba(15, 23, 42, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .glass-card {
-  background: rgba(30, 41, 59, 0.55);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(30, 41, 59, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.07);
 }
 
-/* Custom glowing effects */
-.glow-gold {
-  box-shadow: 0 0 25px -5px rgba(234, 179, 8, 0.35);
+/* =========================================================
+   APPLE LUXURY 3D CYLINDRICAL PEDESTAL & MEDAL SYSTEM
+   ========================================================= */
+
+/* Ambient Lighting behind podium */
+.ambient-glow {
+  background: radial-gradient(ellipse 75% 65% at 50% 50%, rgba(255, 215, 0, 0.18) 0%, rgba(255, 237, 150, 0.08) 55%, transparent 100%);
 }
 
-.glow-silver {
-  box-shadow: 0 0 20px -5px rgba(148, 163, 184, 0.3);
+.ambient-glow-warm {
+  background: radial-gradient(ellipse 75% 65% at 50% 50%, rgba(255, 237, 150, 0.8) 0%, rgba(255, 248, 215, 0.45) 55%, rgba(250, 246, 233, 0) 100%);
 }
 
-.glow-bronze {
-  box-shadow: 0 0 20px -5px rgba(217, 119, 6, 0.3);
+/* Realistic 3D Cylindrical Podium Styling */
+.cylinder-base {
+  position: relative;
+  border-bottom-left-radius: 9999px 40px;
+  border-bottom-right-radius: 9999px 40px;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.glow-cyan {
-  box-shadow: 0 0 25px -5px rgba(6, 182, 212, 0.35);
+/* Gold Pedestal (Champion #1) */
+.cylinder-base-gold {
+  background: linear-gradient(90deg, #d97706 0%, #fbbf24 22%, #fef08a 48%, #f59e0b 74%, #b45309 100%);
+  box-shadow: 0 20px 40px -10px rgba(245, 158, 11, 0.45), inset 0 -4px 8px rgba(146, 64, 14, 0.6);
 }
 
-.glow-emerald {
-  box-shadow: 0 0 20px -5px rgba(16, 185, 129, 0.3);
+.cylinder-cap-gold {
+  position: absolute;
+  top: -16px;
+  left: 0;
+  right: 0;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #ffffff 0%, #fef08a 45%, #f59e0b 100%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 2px 4px rgba(255, 255, 255, 0.95);
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  z-index: 10;
+}
+
+/* Silver Pedestal (Rank #2) */
+.cylinder-base-silver {
+  background: linear-gradient(90deg, #64748b 0%, #cbd5e1 22%, #f8fafc 48%, #94a3b8 74%, #475569 100%);
+  box-shadow: 0 20px 40px -10px rgba(148, 163, 184, 0.35), inset 0 -4px 8px rgba(51, 65, 85, 0.6);
+}
+
+.cylinder-cap-silver {
+  position: absolute;
+  top: -16px;
+  left: 0;
+  right: 0;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 45%, #94a3b8 100%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 2px 4px rgba(255, 255, 255, 0.95);
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  z-index: 10;
+}
+
+/* Bronze Pedestal (Rank #3) */
+.cylinder-base-bronze {
+  background: linear-gradient(90deg, #9a3412 0%, #ea580c 22%, #fed7aa 48%, #c2410c 74%, #7c2d12 100%);
+  box-shadow: 0 20px 40px -10px rgba(234, 88, 12, 0.35), inset 0 -4px 8px rgba(124, 45, 18, 0.6);
+}
+
+.cylinder-cap-bronze {
+  position: absolute;
+  top: -16px;
+  left: 0;
+  right: 0;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #ffffff 0%, #fed7aa 45%, #ea580c 100%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 2px 4px rgba(255, 255, 255, 0.95);
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  z-index: 10;
+}
+
+/* 3D Round Badges / Medals */
+.medal-3d {
+  position: relative;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.25));
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.medal-3d-gold {
+  background: radial-gradient(circle at 35% 30%, #fff5a8 0%, #ffd02f 45%, #df9d07 90%, #b87600 100%);
+  border: 3px solid #fff399;
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.8), inset 0 -3px 6px rgba(160, 95, 0, 0.5);
+}
+
+.medal-3d-silver {
+  background: radial-gradient(circle at 35% 30%, #ffffff 0%, #e2e8f0 45%, #94a3b8 85%, #64748b 100%);
+  border: 3px solid #f8fafc;
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.9), inset 0 -3px 6px rgba(71, 85, 105, 0.4);
+}
+
+.medal-3d-bronze {
+  background: radial-gradient(circle at 35% 30%, #fed7aa 0%, #f97316 45%, #c2410c 85%, #9a3412 100%);
+  border: 3px solid #ffedd5;
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.8), inset 0 -3px 6px rgba(124, 45, 18, 0.5);
+}
+
+/* Ribbon tails behind medal */
+.ribbon-gold::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  width: 22px;
+  height: 16px;
+  background: linear-gradient(180deg, #e5a30d, #b87600);
+  clip-path: polygon(0 0, 100% 0, 85% 100%, 50% 65%, 15% 100%);
+  z-index: -1;
+}
+
+.ribbon-silver::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  width: 22px;
+  height: 16px;
+  background: linear-gradient(180deg, #94a3b8, #64748b);
+  clip-path: polygon(0 0, 100% 0, 85% 100%, 50% 65%, 15% 100%);
+  z-index: -1;
+}
+
+.ribbon-bronze::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  width: 22px;
+  height: 16px;
+  background: linear-gradient(180deg, #ea580c, #9a3412);
+  clip-path: polygon(0 0, 100% 0, 85% 100%, 50% 65%, 15% 100%);
+  z-index: -1;
+}
+
+/* Apple Frosted Glass Ranking Pill Row */
+.ranking-pill-row {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ranking-pill-row:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px) scale(1.003);
+  box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 215, 0, 0.3);
+}
+
+/* Warm / Light theme variation for ranking pill */
+.ranking-pill-row-warm {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ranking-pill-row-warm:hover {
+  background: rgba(255, 255, 255, 0.95);
+  transform: translateY(-2px) scale(1.003);
+  box-shadow: 0 10px 22px -6px rgba(180, 150, 80, 0.18), 0 0 0 1.5px rgba(255, 222, 50, 0.5);
+}
+
+/* Hover elevation for podium columns */
+.podium-card {
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.podium-card:hover {
+  transform: translateY(-6px);
+}
+
+.podium-card:hover .cylinder-base {
+  filter: brightness(1.06);
+}
+
+.podium-card:hover .avatar-ring {
+  transform: scale(1.05);
+}
+
+/* Floating subtle Apple-style animations */
+@keyframes gentleFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.floating-anim-1 {
+  animation: gentleFloat 4s ease-in-out infinite;
+}
+
+.floating-anim-2 {
+  animation: gentleFloat 4.6s ease-in-out infinite 0.5s;
+}
+
+.floating-anim-3 {
+  animation: gentleFloat 4.2s ease-in-out infinite 1s;
+}
+
+/* Shimmer effect for gold medal & crown */
+@keyframes shimmerGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.4));
+  }
+  50% {
+    filter: drop-shadow(0 0 16px rgba(255, 200, 0, 0.85));
+  }
+}
+
+.shimmer-active {
+  animation: shimmerGlow 3s ease-in-out infinite;
+}
+
+/* Staggered entrance animations */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-entrance {
+  animation: fadeSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Apple Tooltip Popover transition */
+.stat-tooltip {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px) scale(0.96);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.podium-card:hover .stat-tooltip {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .floating-anim-1,
+  .floating-anim-2,
+  .floating-anim-3,
+  .shimmer-active,
+  .animate-entrance {
+    animation: none !important;
+    transform: none !important;
+  }
+  .podium-card,
+  .ranking-pill-row {
+    transition: none !important;
+  }
 }

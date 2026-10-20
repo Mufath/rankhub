@@ -2,9 +2,6 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import {
   ArrowLeft,
-  Share2,
-  Download,
-  PlusCircle,
   AlertTriangle,
   Layers,
   Sparkles,
@@ -63,15 +60,15 @@ export default async function BoardDetailPage({ params }: PageProps) {
   const isLocked = board.status === "LOCKED" || board.status === "ARCHIVED";
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-300 pb-12">
-      {/* Top Breadcrumb & Status Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
+    <div className="space-y-6 animate-in fade-in duration-300 pb-16 max-w-5xl mx-auto">
+      {/* Top Breadcrumb & Status Pill */}
+      <div className="flex flex-wrap items-center justify-between gap-3 px-2">
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-cyan-400 transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-white transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Kembali ke Semua Papan</span>
+          <span>Semua Papan</span>
         </Link>
 
         <div className="flex items-center gap-2">
@@ -90,20 +87,27 @@ export default async function BoardDetailPage({ params }: PageProps) {
             </span>
           )}
 
-          <span className="text-xs px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 font-mono">
-            {board.sortOrder === "DESC" ? "Urutan: Nilai Tertinggi" : "Urutan: Tercepat (ms)"}
+          <span className="text-xs px-2.5 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-400 font-mono">
+            {board.sortOrder === "DESC" ? "Urutan: Tertinggi (Rp)" : "Urutan: Tercepat (ms)"}
           </span>
         </div>
       </div>
 
-      {/* Main Board Hero Header */}
-      <div className="p-6 sm:p-8 rounded-3xl glass-panel relative overflow-hidden">
-        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+      {/* =========================================================
+          APPLE-STYLE MAIN LEADERBOARD CONTAINER
+          ========================================================= */}
+      <main
+        className="w-full bg-[#0d121f]/90 border border-white/10 rounded-[38px] md:rounded-[46px] shadow-2xl p-6 sm:p-10 relative overflow-hidden animate-entrance backdrop-blur-2xl"
+        data-purpose="leaderboard-container"
+      >
+        {/* Subtle Ambient Glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-2xl h-64 ambient-glow pointer-events-none" />
 
-        <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-          <div className="max-w-3xl space-y-3">
-            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-cyan-950/80 border border-cyan-500/30 text-cyan-300 text-xs font-mono">
-              <Zap className="w-3.5 h-3.5 text-cyan-400" />
+        {/* Board Header Section */}
+        <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 pb-6 border-b border-white/10">
+          <div className="max-w-2xl space-y-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-amber-300 text-xs font-mono font-semibold">
+              <Zap className="w-3.5 h-3.5 text-amber-400" />
               /board/{board.slug}
             </div>
 
@@ -111,67 +115,65 @@ export default async function BoardDetailPage({ params }: PageProps) {
               {board.title}
             </h1>
 
-            <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
+            <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">
               {board.description}
             </p>
           </div>
 
-          {/* Countdown Timer Block */}
-          <div className="shrink-0 p-4 rounded-2xl bg-slate-950/80 border border-slate-800 shadow-xl">
+          {/* Cutoff Countdown Timer */}
+          <div className="shrink-0 p-3 sm:p-4 rounded-2xl bg-black/40 border border-white/10 shadow-lg">
             <CountdownTimer deadline={board.deadline} status={board.status} />
           </div>
         </div>
 
-        {/* Banner Notes / Disclaimer Alert */}
+        {/* Disclaimer / Banner Notes if any */}
         {board.bannerNotes && (
-          <div className="mt-6 p-4 rounded-2xl bg-amber-950/30 border border-amber-500/30 flex items-start gap-3 text-amber-200/90 text-xs sm:text-sm leading-relaxed">
-            <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+          <div className="mt-4 p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-3 text-amber-200 text-xs leading-relaxed">
+            <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
             <div>
-              <span className="font-bold text-amber-300">Catatan & Aturan: </span>
+              <span className="font-bold text-amber-300">Catatan: </span>
               {board.bannerNotes}
             </div>
           </div>
         )}
 
-        {/* Client Interactive Buttons (Export, Share, Submit Entry) */}
+        {/* Client Interactive Action Buttons (Submit bid, share, export) */}
         <BoardClientControls board={boardWithParticipants} isLocked={isLocked} />
-      </div>
 
-      {/* Podium Top 3 */}
-      {board.config?.enablePodium && rankedParticipants.length > 0 && (
-        <Podium
-          participants={rankedParticipants}
-          unitType={board.unitType}
-          customUnit={board.customUnit}
-          isMasked={board.config?.maskIdentifiersByDefault ?? true}
-        />
-      )}
+        {/* 3D Stepped Cylindrical Podium */}
+        {board.config?.enablePodium && rankedParticipants.length > 0 && (
+          <div className="mt-4">
+            <Podium
+              participants={rankedParticipants}
+              unitType={board.unitType}
+              customUnit={board.customUnit}
+              isMasked={board.config?.maskIdentifiersByDefault ?? true}
+            />
+          </div>
+        )}
 
-      {/* Leaderboard Table Section */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Layers className="w-5 h-5 text-cyan-400" />
-            <h2 className="text-lg font-bold text-white tracking-tight">
-              Papan Peringkat Lengkap
-            </h2>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-mono">
-              {rankedParticipants.length} Entri
+        {/* Leaderboard Table & Ranking Pill Rows */}
+        <div className="mt-8 space-y-4">
+          <div className="flex items-center justify-between px-1">
+            <div className="flex items-center gap-2">
+              <Layers className="w-4 h-4 text-amber-400" />
+              <h2 className="text-base sm:text-lg font-black text-white tracking-tight">
+                Daftar Klasemen Lengkap
+              </h2>
+            </div>
+            <span className="text-xs text-slate-400 font-mono">
+              {rankedParticipants.length} Entri Terdaftar
             </span>
           </div>
 
-          <span className="text-xs text-slate-500">
-            Realtime Rank Order
-          </span>
+          <LeaderboardTable
+            participants={rankedParticipants}
+            unitType={board.unitType}
+            customUnit={board.customUnit}
+            defaultMasked={board.config?.maskIdentifiersByDefault ?? true}
+          />
         </div>
-
-        <LeaderboardTable
-          participants={rankedParticipants}
-          unitType={board.unitType}
-          customUnit={board.customUnit}
-          defaultMasked={board.config?.maskIdentifiersByDefault ?? true}
-        />
-      </div>
+      </main>
     </div>
   );
 }
