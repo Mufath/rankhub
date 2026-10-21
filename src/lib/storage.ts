@@ -32,7 +32,19 @@ function ensureDataLoaded(): StorageData {
       const content = fs.readFileSync(filePath, "utf-8");
       const parsed = JSON.parse(content) as StorageData;
       if (parsed && Array.isArray(parsed.boards) && Array.isArray(parsed.participants)) {
+        // Ensure new seed boards (like cardchase-pokemon) are merged in if missing
+        SEED_BOARDS.forEach((sb) => {
+          if (!parsed.boards.some((b) => b.id === sb.id)) {
+            parsed.boards.unshift(sb);
+          }
+        });
+        SEED_PARTICIPANTS.forEach((sp) => {
+          if (!parsed.participants.some((p) => p.id === sp.id)) {
+            parsed.participants.push(sp);
+          }
+        });
         globalMemoryCache = parsed;
+        persistData(parsed);
         return globalMemoryCache;
       }
     }
