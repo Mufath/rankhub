@@ -256,23 +256,6 @@ export default function AdminPage() {
     }
   };
 
-  // Reset to seed
-  const handleResetSeed = async () => {
-    if (!confirm("Reset database kembali ke data default RankHub?")) return;
-    try {
-      const res = await fetch("/api/reset", {
-        method: "POST",
-        headers: { "x-admin-secret": adminSecret },
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        alert("Database berhasil di-reset!");
-        fetchBoards(adminSecret);
-      }
-    } catch (err) {
-      alert((err as Error).message);
-    }
-  };
 
   // Filter participants
   const filteredParticipants = (currentBoardData?.participants || []).filter((p) => {
@@ -392,16 +375,6 @@ export default function AdminPage() {
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Lihat Leaderboard</span>
             </Link>
-
-            <button
-              type="button"
-              onClick={handleResetSeed}
-              className="px-3 py-1.5 rounded-full bg-white/70 hover:bg-white border border-gray-200 text-xs font-bold text-gray-600 hover:text-gray-900 flex items-center gap-1.5 transition-colors shadow-xs cursor-pointer"
-              title="Reset database ke default"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Reset Seed</span>
-            </button>
 
             <button
               type="button"
