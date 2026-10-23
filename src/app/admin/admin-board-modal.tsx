@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   X,
   Sparkles,
@@ -17,7 +17,7 @@ import { Board, BoardSortOrder, BoardUnitType, BoardStatus, BoardVisibility } fr
 interface AdminBoardModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSaved: () => void;
+  onSaved: (savedSlug?: string) => void;
   boardToEdit?: Board | null;
   adminSecret: string;
 }
@@ -130,6 +130,27 @@ export function AdminBoardModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (isOpen) {
+      setTitle(boardToEdit?.title || "");
+      setSlug(boardToEdit?.slug || "");
+      setDescription(boardToEdit?.description || "");
+      setBannerNotes(boardToEdit?.bannerNotes || "");
+      setSortOrder(boardToEdit?.sortOrder || "DESC");
+      setUnitType(boardToEdit?.unitType || "CURRENCY_IDR");
+      setCustomUnit(boardToEdit?.customUnit || "");
+      setStatus(boardToEdit?.status || "ACTIVE");
+      setDeadline(boardToEdit?.deadline ? boardToEdit.deadline.substring(0, 16) : "");
+      setVisibility(boardToEdit?.visibility || "PUBLIC");
+      setAllowPublicSubmit(boardToEdit?.config?.allowPublicSubmit ?? true);
+      setEnableAntiSniping(boardToEdit?.config?.enableAntiSniping ?? true);
+      setAntiSnipingThresholdSec(boardToEdit?.config?.antiSnipingThresholdSec ?? 60);
+      setAntiSnipingExtensionSec(boardToEdit?.config?.antiSnipingExtensionSec ?? 120);
+      setWebhookUrl(boardToEdit?.config?.webhookUrl || "");
+      setError(null);
+    }
+  }, [isOpen, boardToEdit]);
+
   if (!isOpen) return null;
 
   const handleTitleChange = (val: string) => {
@@ -205,7 +226,7 @@ export function AdminBoardModal({
         throw new Error(json.error || "Gagal menyimpan papan");
       }
 
-      onSaved();
+      onSaved(json.data?.slug || slug);
       onClose();
     } catch (err) {
       setError((err as Error).message);

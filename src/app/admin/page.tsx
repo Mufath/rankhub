@@ -108,7 +108,7 @@ export default function AdminPage() {
     setAdminSecret("");
   };
 
-  const fetchBoards = async (secret: string) => {
+  const fetchBoards = async (secret: string, autoSelectSlug?: string) => {
     try {
       const res = await fetch("/api/boards", {
         headers: { "x-admin-secret": secret },
@@ -116,9 +116,14 @@ export default function AdminPage() {
       const data = await res.json();
       if (res.ok && data.success) {
         setBoards(data.data);
-        if (data.data.length > 0 && !selectedSlug) {
-          setSelectedSlug(data.data[0].slug);
-          fetchBoardDetails(data.data[0].slug, secret);
+        if (data.data.length > 0) {
+          const targetSlug = autoSelectSlug || selectedSlug || data.data[0].slug;
+          const found = data.data.find((b: Board) => b.slug === targetSlug) || data.data[0];
+          setSelectedSlug(found.slug);
+          fetchBoardDetails(found.slug, secret);
+        } else {
+          setSelectedSlug("");
+          setCurrentBoardData(null);
         }
       }
     } catch (err) {
@@ -748,26 +753,53 @@ export default function AdminPage() {
             </div>
           </div>
         ) : (
-          <div className="p-12 text-center bg-[#FAF6E9] border border-white/80 rounded-[40px] text-gray-500">
-            {loadingBoard ? "Memuat data papan..." : "Belum ada papan peringkat yang dipilih."}
+          <div className="p-10 sm:p-14 text-center bg-[#FAF6E9] border border-white/80 rounded-[40px] text-gray-500 shadow-[0_20px_50px_rgba(0,0,0,0.06)]">
+            {loadingBoard ? (
+              <div className="flex items-center justify-center gap-2 text-xs text-gray-500">
+                <Loader2 className="w-4 h-4 animate-spin text-amber-600" />
+                <span>Memuat data papan...</span>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center gap-3">
+                <div className="w-14 h-14 rounded-3xl bg-amber-100 text-amber-700 flex items-center justify-center text-xl shadow-xs">
+                  <PlusCircle className="w-7 h-7" />
+                </div>
+                <div className="text-base font-black text-gray-900 tracking-tight">
+                  Belum Ada Papan Peringkat Aktif
+                </div>
+                <p className="text-xs text-gray-500 max-w-sm font-medium leading-relaxed">
+                  Database Anda masih bersih. Klik tombol di bawah untuk membuat papan lelang prioritas atau turnamen pertama Anda.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setBoardToEdit(null);
+                    setIsBoardModalOpen(true);
+                  }}
+                  className="mt-2 px-6 py-2.5 rounded-full text-xs font-bold bg-[#E8890C] hover:bg-[#d47c09] text-white shadow-md flex items-center gap-2 cursor-pointer transition-all active:scale-95"
+                >
+                  <PlusCircle className="w-4 h-4" />
+                  <span>Buat Papan Pertama</span>
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>
 
-      {/* Admin Modals */}
+      {/* Admin Modals: Board Modal must be rendered even when 0 boards exist */}
+      <AdminBoardModal
+        isOpen={isBoardModalOpen}
+        onClose={() => setIsBoardModalOpen(false)}
+        onSaved={(newSlug) => {
+          fetchBoards(adminSecret, newSlug);
+        }}
+        boardToEdit={boardToEdit}
+        adminSecret={adminSecret}
+      />
+
       {currentBoardData && (
         <>
-          <AdminBoardModal
-            isOpen={isBoardModalOpen}
-            onClose={() => setIsBoardModalOpen(false)}
-            onSaved={() => {
-              fetchBoards(adminSecret);
-              fetchBoardDetails(currentBoardData.slug, adminSecret);
-            }}
-            boardToEdit={boardToEdit}
-            adminSecret={adminSecret}
-          />
-
           <AdminParticipantModal
             board={currentBoardData}
             isOpen={isParticipantModalOpen}
