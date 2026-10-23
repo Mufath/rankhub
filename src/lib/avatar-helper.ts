@@ -1,4 +1,5 @@
 import { Participant } from "@/types";
+import { maskIdentifier } from "./utils";
 
 const CURATED_AVATARS = [
   "https://lh3.googleusercontent.com/aida-public/AB6AXuCKYVezvPCxMSRG3h_-qxBx9DhGvj4wNWO3l2mzp8BSSIWcN5P9jZvs7CPwmuGT8Z_on5TEOHjJUzYZsLBUfqL5sK9TEO5kR42R9QY_iGjhzlbTcsP7def0Tn-3WCMjg1tO195ToDb6Vkhg4FEcF7_WdUctnap5MPE0vG2hfZmrH9KNM_Fv4UuCORtL5gZhQ1xkj9NnRIAX5k2pOA7uP0LtBO8rgh6LQgmy-M0tKmA3WuXlr4TCr7kRdg",
@@ -15,22 +16,26 @@ export function getParticipantAvatar(participant: Participant, index: number): s
   if (metaAvatar) return metaAvatar;
 
   // Otherwise pick from curated avatars deterministically by rank or index
-  const idx = ((participant.rank ? participant.rank - 1 : index) % CURATED_AVATARS.length + CURATED_AVATARS.length) % CURATED_AVATARS.length;
+  const idx =
+    (((participant.rank ? participant.rank - 1 : index) % CURATED_AVATARS.length) +
+      CURATED_AVATARS.length) %
+    CURATED_AVATARS.length;
   return CURATED_AVATARS[idx];
 }
 
 export function getParticipantDeckOrSubtitle(participant: Participant): string {
   const meta = participant.customMeta as Record<string, unknown> | undefined;
-  if (meta?.deck) return String(meta.deck);
   if (meta?.tier) return `${meta.tier} Priority Tier`;
-  if (meta?.telegram) return String(meta.telegram);
-  return `Priority ID: ${participant.identifier.slice(-4)}`;
+  if (meta?.note) return String(meta.note);
+  if (meta?.notes) return String(meta.notes);
+  if (meta?.telegram) return `TG: ${meta.telegram}`;
+  return `NIM: ${maskIdentifier(participant.identifier)}`;
 }
 
 export function getParticipantTierTitle(participant: Participant): string {
-  if (participant.rank === 1) return "Champion Leader";
-  if (participant.rank === 2) return "Legendary Collector";
+  if (participant.rank === 1) return "Grandmaster Champion";
+  if (participant.rank === 2) return "Master Contender";
   if (participant.rank === 3) return "Elite Pioneer";
-  if (participant.status === "VERIFIED") return "Verified Trader";
-  return "Contender";
+  if (participant.status === "VERIFIED") return "Priority Verified";
+  return "Active Contender";
 }

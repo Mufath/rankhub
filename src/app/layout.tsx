@@ -2,8 +2,13 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "CardChase - Leaderboard",
-  description: "CardChase Universal Ranking & Pokémon Card Predictor Platform",
+  title: "RankHub - Universal Ranking & Leaderboard Platform",
+  description:
+    "Sistem papan peringkat universal modular untuk lelang antrean bot subsecond, turnamen, dan skor real-time.",
+  icons: {
+    icon: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 export default function RootLayout({
@@ -14,6 +19,8 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full antialiased">
       <head>
+        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/icon.svg" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link
@@ -25,7 +32,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="bg-[#ECE7D5] min-h-screen font-sans text-gray-800 antialiased flex flex-col justify-center">
+      <body className="bg-[#ECE7D5] min-h-screen font-sans text-gray-800 antialiased flex flex-col justify-start">
         {children}
       </body>
     </html>

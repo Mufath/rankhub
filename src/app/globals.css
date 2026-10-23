@@ -6,13 +6,13 @@ body {
   color: #1F2937;
 }
 
-/* Realistic 3D Cylindrical Podium Styling */
+/* Realistic 3D Cylindrical Podium Columns */
 .cylinder-base {
   position: relative;
   background: linear-gradient(90deg, #F5CF46 0%, #FFE578 22%, #FFF4B0 48%, #FFDD60 74%, #F2C12D 100%);
-  box-shadow: 0 20px 35px -10px rgba(220, 165, 25, 0.45);
-  border-bottom-left-radius: 9999px 40px;
-  border-bottom-right-radius: 9999px 40px;
+  box-shadow: 0 10px 20px -6px rgba(220, 165, 25, 0.3);
+  border-bottom-left-radius: 50% 18px;
+  border-bottom-right-radius: 50% 18px;
   transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -27,6 +27,49 @@ body {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04), inset 0 2px 4px rgba(255, 255, 255, 0.95);
   border: 3.5px solid #FFFFFF;
   z-index: 10;
+}
+
+/* Unified 3D Grounded Stage Plinth (Platform Base) - WIDER than columns to ensure no overhang */
+.podium-stage-platform {
+  position: relative;
+  width: 100%;
+  max-width: 780px;
+  margin: -12px auto 0 auto;
+  z-index: 5;
+}
+
+.podium-stage-cap {
+  position: relative;
+  height: 32px;
+  border-radius: 9999px;
+  background: linear-gradient(180deg, #FFFFFF 0%, #FFF9DA 40%, #FFE97B 100%);
+  box-shadow: 0 3px 12px rgba(212, 155, 20, 0.18), inset 0 2px 5px rgba(255, 255, 255, 0.95);
+  border: 2.5px solid #FFFFFF;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.podium-stage-base {
+  margin-top: -16px;
+  height: 24px;
+  background: linear-gradient(90deg, #D49B14 0%, #F5CF46 20%, #FFEBA0 48%, #FFDD60 76%, #C28704 100%);
+  border-bottom-left-radius: 9999px;
+  border-bottom-right-radius: 9999px;
+  box-shadow: 0 16px 30px -6px rgba(180, 130, 20, 0.38);
+}
+
+.podium-stage-shadow {
+  position: absolute;
+  bottom: -20px;
+  left: 4%;
+  right: 4%;
+  height: 34px;
+  background: radial-gradient(ellipse 80% 55% at 50% 50%, rgba(150, 100, 15, 0.35) 0%, rgba(190, 140, 35, 0.12) 50%, transparent 80%);
+  filter: blur(10px);
+  z-index: 1;
+  pointer-events: none;
 }
 
 /* 3D Round Badges / Medals with Ribbons */
@@ -69,7 +112,6 @@ body {
   clip-path: polygon(0 0, 100% 0, 85% 100%, 50% 65%, 15% 100%);
   z-index: -1;
 }
-
 .ribbon-silver::after {
   content: '';
   position: absolute;
@@ -80,7 +122,6 @@ body {
   clip-path: polygon(0 0, 100% 0, 85% 100%, 50% 65%, 15% 100%);
   z-index: -1;
 }
-
 .ribbon-bronze::after {
   content: '';
   position: absolute;
@@ -99,17 +140,17 @@ body {
 
 /* Glass translucent ranking row */
 .ranking-pill-row {
-  background: rgba(255, 255, 255, 0.55);
+  background: rgba(255, 255, 255, 0.65);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.9);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .ranking-pill-row:hover {
-  background: rgba(255, 255, 255, 0.92);
-  transform: translateY(-2px) scale(1.003);
-  box-shadow: 0 10px 22px -6px rgba(180, 150, 80, 0.18), 0 0 0 1px rgba(255, 222, 50, 0.5);
+  background: rgba(255, 255, 255, 0.96);
+  transform: translateY(-2px) scale(1.002);
+  box-shadow: 0 10px 22px -6px rgba(180, 150, 80, 0.16), 0 0 0 1px rgba(255, 222, 50, 0.5);
 }
 
 /* Hover elevation for podium columns */
@@ -122,8 +163,8 @@ body {
 }
 
 .podium-card:hover .cylinder-base {
-  filter: brightness(1.04);
-  box-shadow: 0 26px 40px -10px rgba(220, 165, 25, 0.65);
+  filter: brightness(1.03);
+  box-shadow: 0 16px 28px -6px rgba(220, 165, 25, 0.45);
 }
 
 .podium-card:hover .avatar-ring {
@@ -180,21 +221,57 @@ body {
 }
 
 .animate-entrance {
-  animation: fadeSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Tooltip Popover transition */
+/* Tooltip Popover transition - Warm Apple Luxury Style */
 .stat-tooltip {
   opacity: 0;
   pointer-events: none;
-  transform: translateY(8px) scale(0.96);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translate(-50%, 8px) scale(0.95);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .podium-card:hover .stat-tooltip {
   opacity: 1;
   pointer-events: auto;
-  transform: translateY(0) scale(1);
+  transform: translate(-50%, 0) scale(1);
+}
+
+/* Apple Refined Badges and Controls (No AI-slop pastels) */
+.apple-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 9999px;
+  padding: 3px 10px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  color: #1C1C1E;
+}
+
+.apple-badge-dot-green {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background-color: #10B981;
+}
+
+.apple-badge-dot-amber {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background-color: #F59E0B;
+}
+
+.apple-badge-dot-rose {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background-color: #EF4444;
 }
 
 /* Prefers reduced motion */

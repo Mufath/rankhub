@@ -7,6 +7,8 @@ import {
 } from "@/lib/storage";
 import { isAdminAuthorized } from "@/lib/auth";
 import { sortAndRankParticipants } from "@/lib/utils";
+import { realtimeHub } from "@/lib/realtime-hub";
+import { dispatchWebhook } from "@/lib/webhooks";
 
 type RouteContext = {
   params: Promise<{ slug: string }>;
@@ -84,6 +86,26 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     };
 
     const saved = await saveBoard(updatedBoard);
+
+    // Broadcast board update to all connected live SSE clients
+    realtimeHub.broadcast(slug, "BOARD_UPDATED", saved);
+
+    // If status changed or deadline extended, dispatch webhook
+    if (body.status && body.status !== board.status) {
+      dispatchWebhook(
+        {
+          event: "board.status_changed",
+          boardSlug: board.slug,
+          boardTitle: board.title,
+          timestamp: new Date().toISOString(),
+          data: {
+            oldStatus: board.status,
+            newStatus: body.status,
+          },
+        },
+        saved.config?.webhookUrl
+      ).catch(() => {});
+    }
 
     return NextResponse.json({
       success: true,

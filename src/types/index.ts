@@ -14,6 +14,12 @@ export interface BoardConfig {
   enablePodium?: boolean;
   maxEntries?: number;
   currencyPrefix?: string;
+  enableAntiSniping?: boolean; // Point 5: Dynamic soft-close
+  antiSnipingThresholdSec?: number; // e.g. 60 seconds
+  antiSnipingExtensionSec?: number; // e.g. 120 seconds
+  webhookUrl?: string; // Point 5: External bot / Discord webhook URL
+  webhookSecret?: string;
+  [key: string]: unknown;
 }
 
 export interface Board {
@@ -62,3 +68,35 @@ export interface ApiResponse<T = unknown> {
   message?: string;
   error?: string;
 }
+
+export type WebhookEventType =
+  | 'bid.created'
+  | 'rank.outbid'
+  | 'rank.reordered'
+  | 'board.deadline_extended'
+  | 'board.status_changed';
+
+export interface WebhookPayload {
+  event: WebhookEventType;
+  boardSlug: string;
+  boardTitle: string;
+  timestamp: string;
+  data: Record<string, unknown>;
+}
+
+export interface RealtimeOutbidPayload {
+  newLeader: string;
+  previousLeader?: string;
+  rank: number;
+  value: number;
+  formattedValue: string;
+  message: string;
+}
+
+export interface RealtimeDeadlinePayload {
+  newDeadline: string;
+  addedSeconds: number;
+  triggeredBy: string;
+  message: string;
+}
+

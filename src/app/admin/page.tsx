@@ -24,12 +24,14 @@ import {
   AlertTriangle,
   Loader2,
   Sparkles,
+  ArrowLeft,
 } from "lucide-react";
 import { Board, Participant, ParticipantStatus, BoardWithParticipants } from "@/types";
 import { formatScore, maskIdentifier } from "@/lib/utils";
 import { AdminBoardModal } from "./admin-board-modal";
 import { AdminParticipantModal } from "./admin-participant-modal";
 import { ExportModal } from "@/components/export-modal";
+import { getParticipantAvatar } from "@/lib/avatar-helper";
 
 export default function AdminPage() {
   const [adminSecret, setAdminSecret] = useState("");
@@ -256,7 +258,7 @@ export default function AdminPage() {
 
   // Reset to seed
   const handleResetSeed = async () => {
-    if (!confirm("Reset database kembali ke contoh data awal (seed data)?")) return;
+    if (!confirm("Reset database kembali ke data default RankHub?")) return;
     try {
       const res = await fetch("/api/reset", {
         method: "POST",
@@ -282,46 +284,44 @@ export default function AdminPage() {
     return true;
   });
 
-  // Render Auth Gate
+  // Render Auth Gate in Apple Luxury Warm Theme
   if (!isAuthenticated) {
     return (
-      <div className="min-h-[70vh] flex items-center justify-center p-4">
-        <div className="w-full max-w-md p-8 rounded-3xl glass-panel border border-slate-800 shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
-
+      <main className="min-h-screen py-12 px-4 flex items-center justify-center bg-[#ECE7D5]">
+        <div className="w-full max-w-md p-8 rounded-[40px] bg-[#FAF6E9] border border-white/90 shadow-[0_30px_70px_rgba(0,0,0,0.12)] relative overflow-hidden animate-entrance">
           <div className="text-center space-y-3 mb-6">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-600 p-0.5 mx-auto shadow-lg shadow-amber-500/20">
-              <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
-                <ShieldCheck className="w-7 h-7 text-amber-400" />
-              </div>
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-400 p-0.5 mx-auto shadow-lg shadow-orange-500/20 flex items-center justify-center text-white">
+              <ShieldCheck className="w-7 h-7" />
             </div>
-            <h1 className="text-2xl font-black text-white tracking-tight">Admin Gate</h1>
-            <p className="text-xs text-slate-400">
+            <h1 className="text-2xl font-black text-gray-900 tracking-tight">
+              Rank<span className="text-[#E8890C]">Hub</span> Admin Gate
+            </h1>
+            <p className="text-xs text-gray-500 font-semibold">
               Masukkan Master Secret / Password Admin untuk mengelola papan lelang dan peserta
             </p>
           </div>
 
           {authError && (
-            <div className="mb-4 p-3 rounded-xl bg-rose-950/60 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 shrink-0 text-rose-400" />
+            <div className="mb-4 p-3 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 shrink-0 text-rose-500" />
               <span>{authError}</span>
             </div>
           )}
 
           <form onSubmit={handleLoginSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
+              <label className="block text-xs font-bold text-gray-700 mb-1">
                 Admin Master Secret / PIN
               </label>
               <div className="relative">
-                <Key className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                <Key className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   type="password"
                   required
                   placeholder="Ketik secret..."
                   value={adminSecret}
                   onChange={(e) => setAdminSecret(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm font-mono text-cyan-300 placeholder-slate-600 focus:outline-none focus:border-cyan-500"
+                  className="w-full pl-10 pr-4 py-2.5 bg-white/80 border border-amber-900/10 rounded-2xl text-xs font-mono font-bold text-gray-900 placeholder:text-gray-400 focus:outline-none focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-300/40 transition-all"
                 />
               </div>
             </div>
@@ -329,7 +329,7 @@ export default function AdminPage() {
             <button
               type="submit"
               disabled={authChecking}
-              className="w-full py-2.5 rounded-xl font-bold text-xs bg-gradient-to-r from-cyan-500 to-sky-600 hover:from-cyan-400 hover:to-sky-500 text-slate-950 shadow-lg shadow-cyan-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              className="w-full py-3 rounded-full font-bold text-xs bg-gradient-to-r from-amber-500 to-[#E8890C] hover:from-amber-600 hover:to-[#d47c09] text-white shadow-md shadow-orange-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 active:scale-95"
             >
               {authChecking ? (
                 <>
@@ -345,511 +345,472 @@ export default function AdminPage() {
             </button>
           </form>
 
-          <div className="mt-6 pt-4 border-t border-slate-800/80 text-center">
-            <span className="text-[11px] text-slate-500">
-              Default password lokal:{" "}
-              <code className="text-cyan-400 font-mono bg-slate-950 px-1.5 py-0.5 rounded border border-slate-800">
-                rankhub2026
-              </code>
+          <div className="mt-6 pt-4 border-t border-gray-200/80 text-center flex items-center justify-between">
+            <span className="text-[11px] text-gray-500 font-semibold">
+              Default password: <code className="font-mono text-amber-700 font-bold">rankhub2026</code>
             </span>
+            <Link href="/" className="text-xs font-bold text-gray-700 hover:text-amber-800 transition-colors">
+              Ke Beranda
+            </Link>
           </div>
         </div>
-      </div>
+      </main>
     );
   }
 
-  // Render Authenticated Dashboard
+  // Render Authenticated Dashboard in Apple Luxury Warm Theme
   return (
-    <div className="space-y-8 animate-in fade-in duration-300 pb-16">
-      {/* Admin Top Bar */}
-      <div className="p-4 sm:p-6 rounded-3xl glass-panel border border-slate-800/80 flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400">
-            <ShieldCheck className="w-5 h-5" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-lg font-bold text-white">RankHub Admin Console</h1>
-              <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-500/30">
-                Authorized
-              </span>
+    <main className="min-h-screen py-4 sm:py-6 px-2 sm:px-4 lg:px-6 bg-[#ECE7D5] overflow-x-hidden flex flex-col items-center">
+      <div className="w-full max-w-[96vw] xl:max-w-[1400px] 2xl:max-w-[1520px] mx-auto space-y-6">
+        {/* Admin Top Bar */}
+        <header className="p-4 sm:p-6 rounded-[36px] bg-[#FAF6E9] border border-white/80 shadow-[0_20px_50px_rgba(0,0,0,0.08)] flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-400 flex items-center justify-center text-white shadow-md shadow-orange-500/20 shrink-0">
+              <ShieldCheck className="w-6 h-6" />
             </div>
-            <p className="text-xs text-slate-400">
-              Kelola papan peringkat, verifikasi pembayaran lelang, dan pantau sinkronisasi bot
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={handleResetSeed}
-            className="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-xs text-slate-400 hover:text-white flex items-center gap-1.5 transition-colors cursor-pointer"
-            title="Reset database ke contoh default"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Reset Seed</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="px-3 py-1.5 rounded-xl bg-rose-950/40 border border-rose-500/30 text-rose-300 hover:bg-rose-900/40 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
-          >
-            <LogOut className="w-3.5 h-3.5" />
-            <span>Keluar</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Board Selector Tabs & Actions */}
-      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
-        {/* Board Switcher Dropdown / Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 max-w-full">
-          <span className="text-xs text-slate-500 shrink-0 font-medium">Papan:</span>
-          {boards.map((b) => (
-            <button
-              key={b.id}
-              type="button"
-              onClick={() => handleSelectBoard(b.slug)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-medium shrink-0 transition-all cursor-pointer flex items-center gap-1.5 ${
-                selectedSlug === b.slug
-                  ? "bg-cyan-500 text-slate-950 font-bold shadow-md shadow-cyan-500/20"
-                  : "bg-slate-900/90 text-slate-300 border border-slate-800 hover:border-slate-700"
-              }`}
-            >
-              <span>{b.title}</span>
-              {b.status === "LOCKED" && <Lock className="w-3 h-3 text-rose-400" />}
-            </button>
-          ))}
-        </div>
-
-        {/* Create Board Button */}
-        <button
-          type="button"
-          onClick={() => {
-            setBoardToEdit(null);
-            setIsBoardModalOpen(true);
-          }}
-          className="px-4 py-2 rounded-xl text-xs font-bold bg-cyan-950 border border-cyan-500/40 text-cyan-300 hover:bg-cyan-900/60 flex items-center justify-center gap-1.5 transition-all shrink-0 cursor-pointer"
-        >
-          <PlusCircle className="w-4 h-4 text-cyan-400" />
-          <span>Buat Papan Baru</span>
-        </button>
-      </div>
-
-      {/* Current Board Detail & Controls Card */}
-      {currentBoardData ? (
-        <div className="space-y-6">
-          <div className="p-6 rounded-3xl glass-panel border border-slate-800/80">
-            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="font-mono text-xs px-2 py-0.5 rounded bg-slate-950 border border-slate-800 text-cyan-400">
-                    /{currentBoardData.slug}
-                  </span>
-                  {currentBoardData.status === "ACTIVE" ? (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-500/30">
-                      ACTIVE (Bisa Bid)
-                    </span>
-                  ) : (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-950 text-rose-300 border border-rose-500/30">
-                      LOCKED (Lelang Ditutup)
-                    </span>
-                  )}
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-slate-900 text-slate-400 border border-slate-800">
-                    {currentBoardData.sortOrder === "DESC" ? "DESC (Rp/Skor)" : "ASC (ms)"}
-                  </span>
-                </div>
-
-                <h2 className="text-xl sm:text-2xl font-black text-white">
-                  {currentBoardData.title}
-                </h2>
-                <p className="text-xs text-slate-400 mt-1 max-w-2xl">
-                  {currentBoardData.description}
-                </p>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-2">
-                <Link
-                  href={`/board/${currentBoardData.slug}`}
-                  target="_blank"
-                  className="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-xs text-slate-300 flex items-center gap-1.5 transition-colors"
-                >
-                  <ExternalLink className="w-3.5 h-3.5 text-cyan-400" />
-                  <span>Lihat Publik</span>
-                </Link>
-
-                <button
-                  type="button"
-                  onClick={handleToggleLockBoard}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer ${
-                    currentBoardData.status === "ACTIVE"
-                      ? "bg-amber-950/60 border border-amber-500/40 text-amber-300 hover:bg-amber-900/60"
-                      : "bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-900/60"
-                  }`}
-                >
-                  {currentBoardData.status === "ACTIVE" ? (
-                    <>
-                      <Lock className="w-3.5 h-3.5 text-amber-400" />
-                      <span>Kunci Lelang</span>
-                    </>
-                  ) : (
-                    <>
-                      <Unlock className="w-3.5 h-3.5 text-emerald-400" />
-                      <span>Buka Lelang</span>
-                    </>
-                  )}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setIsExportModalOpen(true)}
-                  className="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-xs text-slate-300 flex items-center gap-1.5 transition-colors cursor-pointer"
-                >
-                  <Download className="w-3.5 h-3.5 text-cyan-400" />
-                  <span>API & Ekspor</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setBoardToEdit(currentBoardData);
-                    setIsBoardModalOpen(true);
-                  }}
-                  className="p-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
-                  title="Edit Papan"
-                >
-                  <Edit className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </div>
-
-            {/* Quick Stats Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-5 border-t border-slate-800/80">
-              <div className="p-3 rounded-2xl bg-slate-950/60 border border-slate-800/60">
-                <span className="text-[10px] text-slate-500 block uppercase font-semibold">
-                  Total Entri
-                </span>
-                <span className="text-lg font-black text-white mt-0.5 block">
-                  {currentBoardData.stats?.totalParticipants ?? 0}
-                </span>
-              </div>
-
-              <div className="p-3 rounded-2xl bg-slate-950/60 border border-slate-800/60">
-                <span className="text-[10px] text-emerald-400 block uppercase font-semibold">
-                  Lunas / Verified
-                </span>
-                <span className="text-lg font-black text-emerald-300 mt-0.5 block">
-                  {currentBoardData.stats?.verifiedParticipants ?? 0}
-                </span>
-              </div>
-
-              <div className="p-3 rounded-2xl bg-slate-950/60 border border-slate-800/60">
-                <span className="text-[10px] text-amber-400 block uppercase font-semibold">
-                  Menunggu (Pending)
-                </span>
-                <span className="text-lg font-black text-amber-300 mt-0.5 block">
-                  {currentBoardData.stats?.pendingParticipants ?? 0}
-                </span>
-              </div>
-
-              <div className="p-3 rounded-2xl bg-slate-950/60 border border-slate-800/60">
-                <span className="text-[10px] text-cyan-400 block uppercase font-semibold">
-                  Nilai Teratas
-                </span>
-                <span className="text-lg font-black font-mono text-cyan-300 mt-0.5 block truncate">
-                  {formatScore(
-                    currentBoardData.stats?.topValue ?? 0,
-                    currentBoardData.unitType,
-                    currentBoardData.customUnit
-                  )}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Participant Management Table */}
-          <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <Users className="w-5 h-5 text-cyan-400" />
-                <h3 className="font-bold text-white text-base">Manajemen Peserta & Pembayaran</h3>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setParticipantToEdit(null);
-                    setIsParticipantModalOpen(true);
-                  }}
-                  className="px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-500 to-sky-600 hover:from-cyan-400 hover:to-sky-500 text-slate-950 flex items-center gap-1.5 shadow-md shadow-cyan-500/20 cursor-pointer"
-                >
-                  <PlusCircle className="w-4 h-4 text-slate-950" />
-                  <span>Tambah Peserta</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Filter & Search Bar */}
-            <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between p-3.5 glass-card rounded-2xl">
-              <div className="relative flex-1 max-w-sm">
-                <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
-                <input
-                  type="text"
-                  placeholder="Cari nama atau NIM..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-3 py-1.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-cyan-500"
-                />
-              </div>
-
-              <div className="inline-flex items-center p-1 bg-slate-950 border border-slate-800 rounded-xl text-xs">
-                <button
-                  type="button"
-                  onClick={() => setStatusFilter("ALL")}
-                  className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${
-                    statusFilter === "ALL"
-                      ? "bg-slate-800 text-white font-semibold"
-                      : "text-slate-400"
-                  }`}
-                >
-                  Semua ({currentBoardData.participants.length})
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setStatusFilter("VERIFIED")}
-                  className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${
-                    statusFilter === "VERIFIED"
-                      ? "bg-emerald-950 text-emerald-300 font-semibold border border-emerald-500/30"
-                      : "text-slate-400"
-                  }`}
-                >
-                  Verified ({currentBoardData.stats?.verifiedParticipants ?? 0})
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setStatusFilter("PENDING")}
-                  className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${
-                    statusFilter === "PENDING"
-                      ? "bg-amber-950 text-amber-300 font-semibold border border-amber-500/30"
-                      : "text-slate-400"
-                  }`}
-                >
-                  Pending ({currentBoardData.stats?.pendingParticipants ?? 0})
-                </button>
-              </div>
-            </div>
-
-            {/* Table */}
-            {filteredParticipants.length === 0 ? (
-              <div className="p-8 text-center glass-panel rounded-2xl border border-slate-800 text-slate-400 text-xs">
-                Tidak ada data peserta yang cocok.
-              </div>
-            ) : (
-              <div className="glass-panel rounded-2xl overflow-hidden border border-slate-800/80">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs text-slate-300">
-                    <thead className="text-[11px] uppercase bg-slate-950/80 text-slate-400 border-b border-slate-800/80 font-semibold">
-                      <tr>
-                        <th className="px-4 py-3 text-center w-12">#</th>
-                        <th className="px-4 py-3">Peserta & NIM / ID</th>
-                        <th className="px-4 py-3 text-right">Nilai Bid / Skor</th>
-                        <th className="px-4 py-3 text-center">Status Pembayaran</th>
-                        <th className="px-4 py-3">Offset / Catatan</th>
-                        <th className="px-4 py-3 text-right">Aksi Kontrol</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-800/60">
-                      {filteredParticipants.map((p) => {
-                        const delayOffset = (p.customMeta as { delayOffsetMs?: number })
-                          ?.delayOffsetMs;
-                        const notes = (p.customMeta as { notes?: string })?.notes;
-
-                        return (
-                          <tr key={p.id} className="hover:bg-slate-800/30 transition-colors">
-                            <td className="px-4 py-3 text-center font-mono font-bold text-slate-400">
-                              {p.rank}
-                            </td>
-                            <td className="px-4 py-3">
-                              <div className="flex flex-col">
-                                <span className="font-bold text-slate-100 text-sm">
-                                  {p.name}
-                                </span>
-                                <span className="font-mono text-cyan-400 text-xs">
-                                  {p.identifier}
-                                </span>
-                              </div>
-                            </td>
-                            <td className="px-4 py-3 text-right">
-                              <span className="font-mono font-bold text-sm text-cyan-300">
-                                {formatScore(
-                                  p.value,
-                                  currentBoardData.unitType,
-                                  currentBoardData.customUnit
-                                )}
-                              </span>
-                            </td>
-                            <td className="px-4 py-3 text-center">
-                              {p.status === "VERIFIED" ? (
-                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-950 text-emerald-300 border border-emerald-500/30">
-                                  <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                                  PAID / VERIFIED
-                                </span>
-                              ) : p.status === "PENDING" ? (
-                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-950 text-amber-300 border border-amber-500/30">
-                                  <Clock className="w-3 h-3 text-amber-400" />
-                                  PENDING
-                                </span>
-                              ) : (
-                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-950 text-rose-300 border border-rose-500/30">
-                                  <Ban className="w-3 h-3 text-rose-400" />
-                                  DISQUALIFIED
-                                </span>
-                              )}
-                            </td>
-                            <td className="px-4 py-3">
-                              <div className="flex flex-col gap-0.5">
-                                {delayOffset !== undefined && (
-                                  <span className="text-[11px] font-mono text-slate-300">
-                                    Offset: {delayOffset}ms
-                                  </span>
-                                )}
-                                {notes && (
-                                  <span className="text-[10px] text-slate-500 italic">
-                                    {notes}
-                                  </span>
-                                )}
-                                {!delayOffset && !notes && (
-                                  <span className="text-[10px] text-slate-600">-</span>
-                                )}
-                              </div>
-                            </td>
-                            <td className="px-4 py-3 text-right">
-                              <div className="flex items-center justify-end gap-1.5">
-                                {/* Quick verification button */}
-                                {p.status !== "VERIFIED" && (
-                                  <button
-                                    type="button"
-                                    onClick={() => handleUpdateParticipantStatus(p, "VERIFIED")}
-                                    className="px-2 py-1 rounded-lg bg-emerald-950/80 border border-emerald-500/40 text-[10px] font-bold text-emerald-300 hover:bg-emerald-900 transition-colors"
-                                    title="Tandai sudah lunas / valid"
-                                  >
-                                    Set Lunas
-                                  </button>
-                                )}
-                                {p.status === "VERIFIED" && (
-                                  <button
-                                    type="button"
-                                    onClick={() => handleUpdateParticipantStatus(p, "PENDING")}
-                                    className="px-2 py-1 rounded-lg bg-amber-950/80 border border-amber-500/40 text-[10px] font-bold text-amber-300 hover:bg-amber-900 transition-colors"
-                                    title="Kembalikan ke pending"
-                                  >
-                                    Set Pending
-                                  </button>
-                                )}
-
-                                {/* Edit Button */}
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    setParticipantToEdit(p);
-                                    setIsParticipantModalOpen(true);
-                                  }}
-                                  className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition-colors"
-                                  title="Edit peserta"
-                                >
-                                  <Edit className="w-3 h-3" />
-                                </button>
-
-                                {/* Delete Button */}
-                                <button
-                                  type="button"
-                                  onClick={() => handleDeleteParticipant(p.id, p.name)}
-                                  className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-rose-400 hover:bg-rose-950/50 transition-colors"
-                                  title="Hapus peserta"
-                                >
-                                  <Trash2 className="w-3 h-3" />
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Board Danger Zone */}
-          <div className="p-4 rounded-2xl bg-rose-950/20 border border-rose-500/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
-              <span className="text-xs font-bold text-rose-300 block">Danger Zone</span>
-              <p className="text-[11px] text-slate-400">
-                Hapus papan ini beserta seluruh data lelang pesertanya secara permanen.
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl font-black text-gray-900 tracking-tight">
+                  Rank<span className="text-[#E8890C]">Hub</span> Admin Console
+                </h1>
+                <span className="apple-badge">
+                  <span className="apple-badge-dot-green" />
+                  <span>Authorized</span>
+                </span>
+              </div>
+              <p className="text-xs text-gray-500 font-semibold">
+                Kelola papan peringkat, verifikasi status pembayaran, dan pantau sinkronisasi bot
               </p>
             </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Link
+              href="/"
+              className="px-3.5 py-1.5 rounded-full bg-white/70 hover:bg-white border border-gray-200 text-xs font-bold text-gray-700 flex items-center gap-1.5 transition-colors shadow-xs"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Lihat Leaderboard</span>
+            </Link>
+
             <button
               type="button"
-              onClick={handleDeleteBoard}
-              className="px-3.5 py-1.5 rounded-xl bg-rose-950 border border-rose-500/40 text-xs font-bold text-rose-300 hover:bg-rose-900 transition-colors cursor-pointer shrink-0"
+              onClick={handleResetSeed}
+              className="px-3 py-1.5 rounded-full bg-white/70 hover:bg-white border border-gray-200 text-xs font-bold text-gray-600 hover:text-gray-900 flex items-center gap-1.5 transition-colors shadow-xs cursor-pointer"
+              title="Reset database ke default"
             >
-              Hapus Papan ({currentBoardData.title})
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Reset Seed</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="px-3.5 py-1.5 rounded-full bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 text-xs font-bold flex items-center gap-1.5 transition-colors shadow-xs cursor-pointer"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Keluar</span>
             </button>
           </div>
-        </div>
-      ) : (
-        <div className="p-12 text-center glass-panel rounded-3xl border border-slate-800 text-slate-400">
-          <Layers className="w-8 h-8 text-cyan-400 mx-auto mb-2 opacity-50" />
-          <p className="text-sm">Belum ada papan yang dipilih.</p>
+        </header>
+
+        {/* Board Selector Tabs & Actions */}
+        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+          {/* Board Switcher Pills */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 max-w-full">
+            <span className="text-xs text-gray-500 shrink-0 font-bold">Papan:</span>
+            {boards.map((b) => (
+              <button
+                key={b.id}
+                type="button"
+                onClick={() => handleSelectBoard(b.slug)}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-bold shrink-0 transition-all cursor-pointer flex items-center gap-1.5 ${
+                  selectedSlug === b.slug
+                    ? "bg-[#FFDE32] text-gray-900 shadow-sm"
+                    : "bg-[#EFE9D2]/70 text-gray-700 hover:bg-white/60"
+                }`}
+              >
+                <span>{b.title}</span>
+                {b.status === "LOCKED" && <Lock className="w-3 h-3 text-rose-600" />}
+              </button>
+            ))}
+          </div>
+
+          {/* Create Board Button */}
           <button
             type="button"
-            onClick={() => setIsBoardModalOpen(true)}
-            className="mt-3 px-4 py-2 rounded-xl text-xs font-bold bg-cyan-500 text-slate-950 hover:bg-cyan-400 transition-colors"
+            onClick={() => {
+              setBoardToEdit(null);
+              setIsBoardModalOpen(true);
+            }}
+            className="px-4 py-2 rounded-full text-xs font-bold bg-[#E8890C] hover:bg-[#d47c09] text-white shadow-md flex items-center justify-center gap-1.5 transition-all shrink-0 cursor-pointer active:scale-95"
           >
-            Buat Papan Pertama
+            <PlusCircle className="w-4 h-4" />
+            <span>Buat Papan Baru</span>
           </button>
         </div>
-      )}
 
-      {/* Board Create / Edit Modal */}
-      <AdminBoardModal
-        isOpen={isBoardModalOpen}
-        onClose={() => setIsBoardModalOpen(false)}
-        boardToEdit={boardToEdit}
-        adminSecret={adminSecret}
-        onSaved={() => {
-          fetchBoards(adminSecret);
-          if (selectedSlug) {
-            fetchBoardDetails(selectedSlug, adminSecret);
-          }
-        }}
-      />
+        {/* Current Board Detail & Controls Card */}
+        {currentBoardData ? (
+          <div className="space-y-6">
+            <div className="p-6 sm:p-8 rounded-[40px] bg-[#FAF6E9] border border-white/80 shadow-[0_25px_60px_rgba(0,0,0,0.10)]">
+              <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                    <span className="font-mono text-xs px-2.5 py-0.5 rounded-full bg-[#EFE9D2] text-amber-900 font-bold border border-amber-900/10">
+                      /{currentBoardData.slug}
+                    </span>
+                    <span
+                      className={`text-xs px-2.5 py-0.5 rounded-full font-bold ${
+                        currentBoardData.status === "ACTIVE"
+                          ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
+                          : currentBoardData.status === "LOCKED"
+                          ? "bg-rose-100 text-rose-800 border border-rose-300"
+                          : "bg-gray-100 text-gray-600"
+                      }`}
+                    >
+                      {currentBoardData.status}
+                    </span>
+                    <span className="text-xs px-2.5 py-0.5 rounded-full bg-white/70 text-gray-600 border border-gray-200 font-medium">
+                      {currentBoardData.sortOrder === "DESC" ? "Tertinggi (Desc)" : "Tercepat (Asc)"}
+                    </span>
+                  </div>
 
-      {/* Participant Create / Edit Modal */}
+                  <h2 className="text-2xl font-black text-gray-900 tracking-tight">
+                    {currentBoardData.title}
+                  </h2>
+                  <p className="text-xs text-gray-500 font-medium mt-1 max-w-xl">
+                    {currentBoardData.description || "Tidak ada deskripsi"}
+                  </p>
+                </div>
+
+                {/* Board Action Buttons */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <Link
+                    href={`/board/${currentBoardData.slug}`}
+                    target="_blank"
+                    className="px-3.5 py-2 rounded-full bg-white/80 hover:bg-white border border-gray-200 text-xs font-bold text-gray-700 flex items-center gap-1.5 transition-colors shadow-xs"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5 text-amber-600" />
+                    <span>Lihat Publik</span>
+                  </Link>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setBoardToEdit(currentBoardData);
+                      setIsBoardModalOpen(true);
+                    }}
+                    className="px-3.5 py-2 rounded-full bg-white/80 hover:bg-white border border-gray-200 text-xs font-bold text-gray-700 flex items-center gap-1.5 transition-colors shadow-xs cursor-pointer"
+                  >
+                    <Edit className="w-3.5 h-3.5 text-gray-500" />
+                    <span>Edit Papan</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleToggleLockBoard}
+                    className={`px-3.5 py-2 rounded-full text-xs font-bold flex items-center gap-1.5 transition-colors shadow-xs cursor-pointer ${
+                      currentBoardData.status === "ACTIVE"
+                        ? "bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300"
+                        : "bg-emerald-100 hover:bg-emerald-200 text-emerald-900 border border-emerald-300"
+                    }`}
+                  >
+                    {currentBoardData.status === "ACTIVE" ? (
+                      <>
+                        <Lock className="w-3.5 h-3.5" />
+                        <span>Kunci Lelang</span>
+                      </>
+                    ) : (
+                      <>
+                        <Unlock className="w-3.5 h-3.5" />
+                        <span>Buka Lelang</span>
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setIsExportModalOpen(true)}
+                    className="px-3.5 py-2 rounded-full bg-white/80 hover:bg-white border border-gray-200 text-xs font-bold text-gray-700 flex items-center gap-1.5 transition-colors shadow-xs cursor-pointer"
+                  >
+                    <Download className="w-3.5 h-3.5 text-amber-600" />
+                    <span>Ekspor / API</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleDeleteBoard}
+                    className="p-2 rounded-full bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 transition-colors shadow-xs cursor-pointer"
+                    title="Hapus papan ini"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Stats Counters */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6">
+                <div className="p-4 rounded-2xl bg-white/70 border border-amber-900/10">
+                  <div className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                    Total Peserta
+                  </div>
+                  <div className="text-2xl font-black text-gray-900 mt-1">
+                    {currentBoardData.participants.length}
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-white/70 border border-amber-900/10">
+                  <div className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">
+                    Verified (Lunas)
+                  </div>
+                  <div className="text-2xl font-black text-emerald-700 mt-1">
+                    {currentBoardData.participants.filter((p) => p.status === "VERIFIED").length}
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-white/70 border border-amber-900/10">
+                  <div className="text-[11px] font-bold text-amber-700 uppercase tracking-wider">
+                    Pending Transfer
+                  </div>
+                  <div className="text-2xl font-black text-amber-700 mt-1">
+                    {currentBoardData.participants.filter((p) => p.status === "PENDING").length}
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-white/70 border border-amber-900/10">
+                  <div className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                    Nilai Tertinggi
+                  </div>
+                  <div className="text-xl font-black text-gray-900 mt-1 font-mono truncate">
+                    {currentBoardData.participants.length > 0
+                      ? formatScore(
+                          currentBoardData.participants[0].value,
+                          currentBoardData.unitType,
+                          currentBoardData.customUnit
+                        )
+                      : "-"}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Participants Management Section */}
+            <div className="p-6 sm:p-8 rounded-[40px] bg-[#FAF6E9] border border-white/80 shadow-[0_25px_60px_rgba(0,0,0,0.10)] space-y-4">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-extrabold text-lg text-gray-900">Daftar Peserta & Urutan</h3>
+                  <span className="text-xs font-bold text-gray-500">
+                    ({filteredParticipants.length} dari {currentBoardData.participants.length})
+                  </span>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  {/* Search box */}
+                  <div className="flex items-center gap-2 bg-white/80 border border-amber-900/10 rounded-full px-3 py-1.5 shadow-xs">
+                    <Search className="w-3.5 h-3.5 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Cari nama / NIM..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="bg-transparent text-xs text-gray-800 placeholder-gray-400 border-none outline-none focus:ring-0 p-0 w-28 sm:w-36 font-medium"
+                    />
+                  </div>
+
+                  {/* Status filter */}
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="px-3 py-1.5 bg-white/80 border border-amber-900/10 rounded-full text-xs font-bold text-gray-700 outline-none cursor-pointer"
+                  >
+                    <option value="ALL">Semua Status</option>
+                    <option value="VERIFIED">Hanya Verified</option>
+                    <option value="PENDING">Hanya Pending</option>
+                    <option value="DISQUALIFIED">Disqualified</option>
+                  </select>
+
+                  {/* Add participant button */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setParticipantToEdit(null);
+                      setIsParticipantModalOpen(true);
+                    }}
+                    className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#E8890C] hover:bg-[#d47c09] text-white shadow-md flex items-center gap-1.5 transition-all cursor-pointer active:scale-95"
+                  >
+                    <PlusCircle className="w-3.5 h-3.5" />
+                    <span>Tambah Peserta</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Participants Rows */}
+              <div className="space-y-2 pt-2">
+                {filteredParticipants.length === 0 ? (
+                  <div className="p-8 text-center bg-white/40 border border-gray-200/60 rounded-3xl text-gray-500 text-xs">
+                    Tidak ada peserta yang ditemukan.
+                  </div>
+                ) : (
+                  filteredParticipants.map((p, index) => {
+                    const rank = p.rank || index + 1;
+                    const meta = p.customMeta as Record<string, unknown> | undefined;
+
+                    return (
+                      <div
+                        key={p.id}
+                        className="ranking-pill-row rounded-full px-5 py-3 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 group"
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          {/* Rank badge */}
+                          <span
+                            className={`w-7 h-7 shrink-0 rounded-full border text-gray-900 font-extrabold text-xs flex items-center justify-center shadow-xs ${
+                              rank === 1
+                                ? "border-amber-400 bg-amber-100 text-amber-900"
+                                : rank === 2
+                                ? "border-blue-400 bg-sky-100 text-sky-900"
+                                : rank === 3
+                                ? "border-emerald-400 bg-emerald-100 text-emerald-900"
+                                : "border-gray-300 bg-white"
+                            }`}
+                          >
+                            {rank}
+                          </span>
+
+                          {/* Avatar */}
+                          <img
+                            alt={p.name}
+                            className="w-9 h-9 rounded-full object-cover border border-white shrink-0"
+                            src={getParticipantAvatar(p, index)}
+                          />
+
+                          {/* Info */}
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2">
+                              <h4 className="text-sm font-bold text-gray-900 truncate">{p.name}</h4>
+                              <span className="font-mono text-[11px] text-gray-500 font-semibold">
+                                ({p.identifier})
+                              </span>
+                            </div>
+                            <div className="text-[11px] text-gray-500 font-medium truncate flex items-center gap-2">
+                              {Boolean(meta?.telegram) && (
+                                <span className="text-sky-600 font-semibold">{String(meta?.telegram)}</span>
+                              )}
+                              {Boolean(meta?.note) && <span>• {String(meta?.note)}</span>}
+                              {Boolean(meta?.notes) && <span>• {String(meta?.notes)}</span>}
+                              {meta?.delayOffsetMs !== undefined && (
+                                <span className="text-amber-700 font-mono">
+                                  • Delay: {String(meta.delayOffsetMs)}ms
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                          {/* Status and Action Controls */}
+                          <div className="flex items-center justify-between sm:justify-end gap-2.5 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-gray-200/60">
+                            <span className="text-sm font-black text-gray-900 font-mono pr-1">
+                              {formatScore(p.value, currentBoardData.unitType, currentBoardData.customUnit)}
+                            </span>
+
+                            {/* Apple-Style Status Pill */}
+                            {p.status === "VERIFIED" ? (
+                              <span className="apple-badge">
+                                <span className="apple-badge-dot-green" />
+                                <span>Lunas</span>
+                              </span>
+                            ) : p.status === "PENDING" ? (
+                              <span className="apple-badge">
+                                <span className="apple-badge-dot-amber" />
+                                <span>Pending</span>
+                              </span>
+                            ) : (
+                              <span className="apple-badge">
+                                <span className="apple-badge-dot-rose" />
+                                <span>Diskualifikasi</span>
+                              </span>
+                            )}
+
+                            {/* Apple Action Button: Tandai Lunas (if pending) */}
+                            {p.status !== "VERIFIED" && (
+                              <button
+                                type="button"
+                                onClick={() => handleUpdateParticipantStatus(p, "VERIFIED")}
+                                className="px-3 py-1 rounded-full text-[11px] font-bold bg-[#1C1C1E] hover:bg-black text-white shadow-xs transition-all active:scale-95 cursor-pointer"
+                                title="Tandai Sudah Bayar / Lunas"
+                              >
+                                Tandai Lunas
+                              </button>
+                            )}
+
+                            {/* Edit & Delete actions */}
+                            <div className="flex items-center gap-1 pl-1">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setParticipantToEdit(p);
+                                  setIsParticipantModalOpen(true);
+                                }}
+                                className="p-1.5 rounded-full hover:bg-black/5 text-gray-500 hover:text-gray-900 transition-colors cursor-pointer"
+                                title="Edit peserta"
+                              >
+                                <Edit className="w-3.5 h-3.5" />
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteParticipant(p.id, p.name)}
+                                className="p-1.5 rounded-full hover:bg-rose-50 text-gray-400 hover:text-rose-600 transition-colors cursor-pointer"
+                                title="Hapus peserta"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="p-12 text-center bg-[#FAF6E9] border border-white/80 rounded-[40px] text-gray-500">
+            {loadingBoard ? "Memuat data papan..." : "Belum ada papan peringkat yang dipilih."}
+          </div>
+        )}
+      </div>
+
+      {/* Admin Modals */}
       {currentBoardData && (
-        <AdminParticipantModal
-          board={currentBoardData}
-          isOpen={isParticipantModalOpen}
-          onClose={() => setIsParticipantModalOpen(false)}
-          participantToEdit={participantToEdit}
-          adminSecret={adminSecret}
-          onSaved={() => fetchBoardDetails(currentBoardData.slug, adminSecret)}
-        />
-      )}
+        <>
+          <AdminBoardModal
+            isOpen={isBoardModalOpen}
+            onClose={() => setIsBoardModalOpen(false)}
+            onSaved={() => {
+              fetchBoards(adminSecret);
+              fetchBoardDetails(currentBoardData.slug, adminSecret);
+            }}
+            boardToEdit={boardToEdit}
+            adminSecret={adminSecret}
+          />
 
-      {/* Export & API Modal */}
-      {currentBoardData && (
-        <ExportModal
-          board={currentBoardData}
-          isOpen={isExportModalOpen}
-          onClose={() => setIsExportModalOpen(false)}
-        />
+          <AdminParticipantModal
+            board={currentBoardData}
+            isOpen={isParticipantModalOpen}
+            onClose={() => setIsParticipantModalOpen(false)}
+            onSaved={() => fetchBoardDetails(currentBoardData.slug, adminSecret)}
+            participantToEdit={participantToEdit}
+            adminSecret={adminSecret}
+          />
+
+          <ExportModal
+            board={currentBoardData}
+            isOpen={isExportModalOpen}
+            onClose={() => setIsExportModalOpen(false)}
+          />
+        </>
       )}
-    </div>
+    </main>
   );
 }

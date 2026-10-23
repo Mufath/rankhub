@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF9E1B"/>
+      <stop offset="50%" stop-color="#E8890C"/>
+      <stop offset="100%" stop-color="#B85D00"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="35%" stop-color="#FFF2A3"/>
+      <stop offset="70%" stop-color="#FFD13B"/>
+      <stop offset="100%" stop-color="#D98A00"/>
+    </linearGradient>
+  </defs>
+  <!-- Background rounded icon squircle -->
+  <rect width="64" height="64" rx="16" fill="url(#grad)"/>
+  
+  <!-- Trophy Handles -->
+  <path d="M22 22 H17 C15.5 22 14.5 23.5 15 25 C15.8 28 18.5 30.5 22 30.5" fill="none" stroke="url(#gold)" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M42 22 H47 C48.5 22 49.5 23.5 49 25 C48.2 28 45.5 30.5 42 30.5" fill="none" stroke="url(#gold)" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- Trophy Cup Body -->
+  <path d="M22 17 H42 V27 C42 33.5 37.5 37.5 32 37.5 C26.5 37.5 22 33.5 22 27 Z" fill="url(#gold)" stroke="#FFFFFF" stroke-width="1.2"/>
+  
+  <!-- Trophy Stem & Base -->
+  <rect x="29.5" y="37.5" width="5" height="8" rx="1.5" fill="url(#gold)"/>
+  <path d="M20 45.5 H44 C45 45.5 45.5 46.5 45 47.5 L43.5 49.5 H20.5 L19 47.5 C18.5 46.5 19 45.5 20 45.5 Z" fill="#FFF6D1"/>
+  <rect x="22" y="49.5" width="20" height="2.5" rx="1" fill="#FFFFFF"/>
+
+  <!-- Little Crown Star inside Trophy -->
+  <polygon points="32,21.5 33.3,24.3 36.5,24.8 34.2,26.7 34.8,29.8 32,28.2 29.2,29.8 29.8,26.7 27.5,24.8 30.7,24.3" fill="#8A4A00"/>
+</svg>

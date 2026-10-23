@@ -56,6 +56,11 @@ export async function GET(request: NextRequest, context: RouteContext) {
       ranked = ranked.slice(0, limit);
     }
 
+    // Anti-sniping / Deadline calculation
+    const remainingSeconds = board.deadline
+      ? Math.max(0, Math.floor((new Date(board.deadline).getTime() - Date.now()) / 1000))
+      : null;
+
     // If format is 'queue' (SubSecond Bot Queue Optimization):
     if (format === "queue") {
       const queueList = ranked.map((p, idx) => ({
@@ -77,6 +82,13 @@ export async function GET(request: NextRequest, context: RouteContext) {
             status: board.status,
             sortOrder: board.sortOrder,
             unitType: board.unitType,
+            deadline: board.deadline,
+            deadlineSecondsRemaining: remainingSeconds,
+            antiSniping: {
+              enabled: board.config?.enableAntiSniping !== false,
+              thresholdSeconds: board.config?.antiSnipingThresholdSec ?? 60,
+              extensionSeconds: board.config?.antiSnipingExtensionSec ?? 120,
+            },
           },
           count: queueList.length,
           queue: queueList,

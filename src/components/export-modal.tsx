@@ -36,7 +36,7 @@ export function ExportModal({ board, isOpen, onClose }: ExportModalProps) {
 
   const downloadCSV = () => {
     const headers = ["Rank", "Name", "Identifier", "Value", "Status", "UpdatedAt"];
-    const rows = board.participants.map((p) => [
+    const rows = (board.participants || []).map((p) => [
       p.rank || "",
       `"${p.name.replace(/"/g, '""')}"`,
       `"${p.identifier}"`,
@@ -58,7 +58,8 @@ export function ExportModal({ board, isOpen, onClose }: ExportModalProps) {
     link.remove();
   };
 
-  const domain = typeof window !== "undefined" ? window.location.origin : "https://rankhub.vercel.app";
+  const domain =
+    typeof window !== "undefined" ? window.location.origin : "https://rankhub.vercel.app";
   const apiEndpointUrl = `${domain}/api/boards/${board.slug}/ranks?format=queue${
     apiKeyInput ? `&secret=${apiKeyInput}` : ""
   }`;
@@ -91,85 +92,87 @@ export default {
 };`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/40 backdrop-blur-md animate-in fade-in duration-200">
+      <div className="bg-[#FAF6E9] border border-white/90 rounded-[36px] max-w-2xl w-full p-6 sm:p-7 shadow-[0_25px_60px_rgba(0,0,0,0.18)] relative max-h-[90vh] overflow-y-auto">
         {/* Close Button */}
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+          className="absolute top-5 right-5 w-8 h-8 rounded-full bg-white/70 hover:bg-white text-gray-400 hover:text-gray-900 flex items-center justify-center border border-gray-200/80 transition-colors shadow-xs cursor-pointer"
         >
-          <X className="w-5 h-5" />
+          <X className="w-4 h-4" />
         </button>
 
         {/* Header */}
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-cyan-950 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+        <div className="flex items-center gap-3 mb-5 pr-8">
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-400 flex items-center justify-center text-white shadow-md shadow-orange-500/20 shrink-0">
             <Download className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-white">Ekspor Data & Integrasi API</h3>
-            <p className="text-xs text-slate-400">
-              Download dataset atau hubungkan langsung ke bot eksternal via REST API
+            <h3 className="text-base font-extrabold text-gray-900 tracking-tight">
+              Ekspor Data & Integrasi API
+            </h3>
+            <p className="text-xs text-gray-500 font-semibold truncate max-w-[340px]">
+              Download dataset atau sinkronkan langsung ke bot Cloudflare Worker
             </p>
           </div>
         </div>
 
         {/* Export Buttons */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
           <button
             type="button"
             onClick={downloadJSON}
-            className="flex items-center justify-center gap-2.5 p-3.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700 hover:border-cyan-500/50 text-slate-200 font-semibold text-sm transition-all cursor-pointer group"
+            className="flex items-center justify-center gap-2.5 p-3.5 rounded-2xl bg-white/80 hover:bg-white border border-amber-900/10 hover:border-amber-500 text-gray-800 font-bold text-xs transition-all shadow-xs cursor-pointer group active:scale-98"
           >
-            <FileJson className="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform" />
-            <span>Download format JSON</span>
+            <FileJson className="w-4 h-4 text-amber-600 group-hover:scale-110 transition-transform" />
+            <span>Download Format JSON</span>
           </button>
 
           <button
             type="button"
             onClick={downloadCSV}
-            className="flex items-center justify-center gap-2.5 p-3.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700 hover:border-emerald-500/50 text-slate-200 font-semibold text-sm transition-all cursor-pointer group"
+            className="flex items-center justify-center gap-2.5 p-3.5 rounded-2xl bg-white/80 hover:bg-white border border-amber-900/10 hover:border-emerald-500 text-gray-800 font-bold text-xs transition-all shadow-xs cursor-pointer group active:scale-98"
           >
-            <FileSpreadsheet className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
-            <span>Download format CSV (Excel)</span>
+            <FileSpreadsheet className="w-4 h-4 text-emerald-600 group-hover:scale-110 transition-transform" />
+            <span>Download Format CSV (Excel)</span>
           </button>
         </div>
 
         {/* API Endpoint Section */}
-        <div className="space-y-4 border-t border-slate-800 pt-5">
+        <div className="space-y-3.5 border-t border-gray-200/80 pt-4">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-bold text-slate-200 flex items-center gap-2">
-              <Code2 className="w-4 h-4 text-cyan-400" />
-              REST API Endpoint (SubSecond Queue)
+            <span className="text-xs font-extrabold text-gray-900 flex items-center gap-2">
+              <Code2 className="w-4 h-4 text-amber-600" />
+              REST API Endpoint (SubSecond Bot Queue)
             </span>
           </div>
 
-          <div className="space-y-1.5">
-            <label className="text-xs text-slate-400">
-              Admin Secret / Key (Opsional untuk membuka sensor NIM publik):
+          <div className="space-y-1">
+            <label className="text-[11px] font-bold text-gray-600">
+              Admin Secret / Key (Opsional untuk membuka unmasked NIM):
             </label>
             <input
               type="text"
-              placeholder="Masukkan rankhub2026 untuk full unmasked NIM"
+              placeholder="Masukkan secret untuk unmasked NIM (default: rankhub2026)"
               value={apiKeyInput}
               onChange={(e) => setApiKeyInput(e.target.value)}
-              className="w-full px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-xs font-mono text-cyan-300 placeholder-slate-600 focus:outline-none focus:border-cyan-500"
+              className="w-full px-3.5 py-2 bg-white/80 border border-amber-900/10 rounded-xl text-xs font-mono text-gray-900 placeholder:text-gray-400 focus:outline-none focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-300/40 transition-all"
             />
           </div>
 
           {/* Endpoint Box */}
-          <div className="p-3 bg-slate-950 border border-slate-800 rounded-xl flex items-center justify-between gap-3">
-            <span className="font-mono text-xs text-slate-300 truncate">
+          <div className="p-3 bg-white/90 border border-amber-900/10 rounded-2xl flex items-center justify-between gap-3 shadow-xs">
+            <span className="font-mono text-xs text-amber-900 truncate font-semibold">
               GET {apiEndpointUrl}
             </span>
             <button
               type="button"
               onClick={() => handleCopy(apiEndpointUrl, "endpoint")}
-              className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 flex items-center gap-1 shrink-0"
+              className="px-3 py-1.5 rounded-full bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold flex items-center gap-1.5 shrink-0 transition-colors shadow-xs cursor-pointer active:scale-95"
             >
               {copiedType === "endpoint" ? (
-                <Check className="w-3.5 h-3.5 text-emerald-400" />
+                <Check className="w-3.5 h-3.5" />
               ) : (
                 <Copy className="w-3.5 h-3.5" />
               )}
@@ -177,26 +180,26 @@ export default {
             </button>
           </div>
 
-          {/* Code Snippet */}
+          {/* Code Snippet in macOS terminal style */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-slate-400 font-medium">
+              <span className="text-xs font-bold text-gray-700">
                 Contoh Integrasi Cloudflare Worker:
               </span>
               <button
                 type="button"
                 onClick={() => handleCopy(workerCodeSnippet, "worker")}
-                className="text-xs text-cyan-400 hover:text-cyan-300 flex items-center gap-1"
+                className="text-xs font-bold text-amber-600 hover:text-amber-800 flex items-center gap-1 cursor-pointer"
               >
                 {copiedType === "worker" ? (
-                  <Check className="w-3 h-3 text-emerald-400" />
+                  <Check className="w-3 h-3 text-emerald-600" />
                 ) : (
                   <Copy className="w-3 h-3" />
                 )}
                 <span>Salin Script Worker</span>
               </button>
             </div>
-            <pre className="p-3 bg-slate-950 border border-slate-800/80 rounded-xl font-mono text-[11px] text-slate-300 overflow-x-auto max-h-48 leading-relaxed">
+            <pre className="p-4 bg-[#1E2330] border border-slate-700/60 rounded-2xl font-mono text-[11px] text-slate-200 overflow-x-auto max-h-48 leading-relaxed shadow-inner">
               <code>{workerCodeSnippet}</code>
             </pre>
           </div>

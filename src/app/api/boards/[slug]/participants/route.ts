@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   getBoardBySlug,
+  saveBoard,
   saveParticipant,
   deleteParticipant,
   getParticipantsByBoardId,
 } from "@/lib/storage";
 import { isAdminAuthorized } from "@/lib/auth";
+import { sortAndRankParticipants, formatScore } from "@/lib/utils";
+import { evaluateAntiSniping } from "@/lib/anti-sniping";
+import { realtimeHub } from "@/lib/realtime-hub";
+import { dispatchWebhook } from "@/lib/webhooks";
 import { Participant } from "@/types";
 
 type RouteContext = {
@@ -58,20 +63,54 @@ export async function POST(request: NextRequest, context: RouteContext) {
       );
     }
 
-    // Check if participant with identifier already exists in this board
+    // Check existing participants & track previous rank 1 leader
     const currentParticipants = await getParticipantsByBoardId(board.id);
+    const prevRanked = sortAndRankParticipants(currentParticipants, board.sortOrder);
+    const prevLeader = prevRanked[0]?.name;
+
     const existing = currentParticipants.find(
       (p) => p.identifier.trim().toLowerCase() === String(body.identifier).trim().toLowerCase()
     );
 
     const participantId = existing ? existing.id : (body.id || `part-${Date.now()}`);
 
-    // If public submit, default to PENDING. If admin, can specify status directly.
+    // If public submit, default to PENDING (or VERIFIED if auto-verified)
     const status = isAuth
       ? body.status || "VERIFIED"
       : existing
-      ? existing.status // keep existing status if updating
-      : "PENDING";
+      ? existing.status
+      : "VERIFIED"; // In live lelang, submissions are displayed verified unless flagged
+
+    // --- Point 5: Anti-Sniping (Soft Close) Check ---
+    let antiSnipingInfo = { triggered: false };
+    const antiSniping = evaluateAntiSniping(board);
+    if (antiSniping.triggered && antiSniping.newDeadline) {
+      antiSnipingInfo = antiSniping;
+      board.deadline = antiSniping.newDeadline;
+      await saveBoard(board);
+
+      realtimeHub.broadcast(slug, "DEADLINE_EXTENDED", {
+        newDeadline: antiSniping.newDeadline,
+        addedSeconds: antiSniping.addedSeconds,
+        triggeredBy: body.name.trim(),
+        message: `⚡ Anti-Sniping Aktif: Waktu lelang diperpanjang +${antiSniping.addedSeconds} detik!`,
+      });
+
+      dispatchWebhook(
+        {
+          event: "board.deadline_extended",
+          boardSlug: board.slug,
+          boardTitle: board.title,
+          timestamp: new Date().toISOString(),
+          data: {
+            newDeadline: antiSniping.newDeadline,
+            addedSeconds: antiSniping.addedSeconds,
+            triggeredBy: body.name.trim(),
+          },
+        },
+        board.config?.webhookUrl
+      ).catch(() => {});
+    }
 
     const participant: Participant = {
       id: participantId,
@@ -85,11 +124,73 @@ export async function POST(request: NextRequest, context: RouteContext) {
       updatedAt: new Date().toISOString(),
     };
 
-    const saved = await saveParticipant(participant);
+    const saved = await saveParticipant(participant, { previousValue: existing?.value });
+
+    // Re-fetch and rank participants for Point 2: Realtime Live Re-ranking
+    const updatedParticipants = await getParticipantsByBoardId(board.id);
+    const updatedRanked = sortAndRankParticipants(updatedParticipants, board.sortOrder);
+    const currentRank = updatedRanked.findIndex((p) => p.id === saved.id) + 1;
+    saved.rank = currentRank;
+
+    // Check if new leader took rank #1
+    const newLeader = updatedRanked[0]?.name;
+    if (newLeader && prevLeader && newLeader !== prevLeader && saved.name === newLeader) {
+      realtimeHub.broadcast(slug, "OUTBID_ALERT", {
+        newLeader: saved.name,
+        previousLeader: prevLeader,
+        rank: 1,
+        value: saved.value,
+        formattedValue: formatScore(saved.value, board.unitType, board.customUnit),
+        message: `🔥 ${saved.name} merebut Peringkat #1 dari ${prevLeader}!`,
+      });
+
+      dispatchWebhook(
+        {
+          event: "rank.outbid",
+          boardSlug: board.slug,
+          boardTitle: board.title,
+          timestamp: new Date().toISOString(),
+          data: {
+            newLeader: saved.name,
+            previousLeader: prevLeader,
+            value: saved.value,
+            formattedValue: formatScore(saved.value, board.unitType, board.customUnit),
+          },
+        },
+        board.config?.webhookUrl
+      ).catch(() => {});
+    }
+
+    // Broadcast updated participant array to all live clients
+    realtimeHub.broadcast(slug, "PARTICIPANTS_UPDATED", {
+      participants: updatedRanked,
+      board,
+      timestamp: new Date().toISOString(),
+    });
+
+    // Dispatch webhook for bid creation
+    dispatchWebhook(
+      {
+        event: "bid.created",
+        boardSlug: board.slug,
+        boardTitle: board.title,
+        timestamp: new Date().toISOString(),
+        data: {
+          id: saved.id,
+          name: saved.name,
+          value: saved.value,
+          rank: currentRank,
+          status: saved.status,
+          formattedValue: formatScore(saved.value, board.unitType, board.customUnit),
+        },
+      },
+      board.config?.webhookUrl
+    ).catch(() => {});
 
     return NextResponse.json({
       success: true,
       data: saved,
+      antiSniping: antiSnipingInfo,
       message: existing
         ? "Participant updated successfully"
         : "Participant added successfully",
@@ -153,7 +254,17 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       updatedAt: new Date().toISOString(),
     };
 
-    const saved = await saveParticipant(updated);
+    const saved = await saveParticipant(updated, { previousValue: existing.value });
+
+    // Re-rank & broadcast update
+    const updatedParticipants = await getParticipantsByBoardId(board.id);
+    const updatedRanked = sortAndRankParticipants(updatedParticipants, board.sortOrder);
+
+    realtimeHub.broadcast(slug, "PARTICIPANTS_UPDATED", {
+      participants: updatedRanked,
+      board,
+      timestamp: new Date().toISOString(),
+    });
 
     return NextResponse.json({
       success: true,
@@ -198,6 +309,16 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
     }
 
     await deleteParticipant(participantId);
+
+    // Re-rank & broadcast update
+    const updatedParticipants = await getParticipantsByBoardId(board.id);
+    const updatedRanked = sortAndRankParticipants(updatedParticipants, board.sortOrder);
+
+    realtimeHub.broadcast(slug, "PARTICIPANTS_UPDATED", {
+      participants: updatedRanked,
+      board,
+      timestamp: new Date().toISOString(),
+    });
 
     return NextResponse.json({
       success: true,
