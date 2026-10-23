@@ -88,30 +88,20 @@ create trigger set_participants_updated_at
 before update on public.participants
 for each row execute function public.handle_updated_at();
 
--- 6. ENABLE ROW LEVEL SECURITY (RLS)
-alter table public.boards enable row level security;
-alter table public.participants enable row level security;
-alter table public.bid_history enable row level security;
-alter table public.webhooks enable row level security;
+-- 6. GRANT PERMISSIONS & DISABLE RLS FOR ZERO-RESTRICTION SERVERLESS ACCESS
+grant usage on schema public to anon, authenticated, service_role, postgres;
+grant all on all tables in schema public to anon, authenticated, service_role, postgres;
+grant all on all sequences in schema public to anon, authenticated, service_role, postgres;
+grant all on all routines in schema public to anon, authenticated, service_role, postgres;
 
--- Drop any previous restrictive policies
-drop policy if exists "Allow public read access to active public boards" on public.boards;
-drop policy if exists "Allow public read access to participants" on public.participants;
-drop policy if exists "Allow public read access to bid history" on public.bid_history;
-drop policy if exists "Full access for service role on boards" on public.boards;
-drop policy if exists "Full access for service role on participants" on public.participants;
-drop policy if exists "Full access for service role on bid_history" on public.bid_history;
-drop policy if exists "Full access for service role on webhooks" on public.webhooks;
-drop policy if exists "Full access on boards" on public.boards;
-drop policy if exists "Full access on participants" on public.participants;
-drop policy if exists "Full access on bid_history" on public.bid_history;
-drop policy if exists "Full access on webhooks" on public.webhooks;
+alter default privileges in schema public grant all on tables to anon, authenticated, service_role, postgres;
+alter default privileges in schema public grant all on sequences to anon, authenticated, service_role, postgres;
+alter default privileges in schema public grant all on routines to anon, authenticated, service_role, postgres;
 
--- Universal policies for RankHub application (auth & security handled by Next.js backend & ADMIN_SECRET)
-create policy "Full access on boards" on public.boards for all using (true) with check (true);
-create policy "Full access on participants" on public.participants for all using (true) with check (true);
-create policy "Full access on bid_history" on public.bid_history for all using (true) with check (true);
-create policy "Full access on webhooks" on public.webhooks for all using (true) with check (true);
+alter table if exists public.boards disable row level security;
+alter table if exists public.participants disable row level security;
+alter table if exists public.bid_history disable row level security;
+alter table if exists public.webhooks disable row level security;
 
 -- 7. ENABLE REALTIME STREAMING (Safe Publication Check)
 do $$
