@@ -94,35 +94,24 @@ alter table public.participants enable row level security;
 alter table public.bid_history enable row level security;
 alter table public.webhooks enable row level security;
 
--- Public read access policies (Safe Drop & Recreate)
+-- Drop any previous restrictive policies
 drop policy if exists "Allow public read access to active public boards" on public.boards;
-create policy "Allow public read access to active public boards"
-  on public.boards for select using (visibility = 'PUBLIC' or true);
-
 drop policy if exists "Allow public read access to participants" on public.participants;
-create policy "Allow public read access to participants"
-  on public.participants for select using (true);
-
 drop policy if exists "Allow public read access to bid history" on public.bid_history;
-create policy "Allow public read access to bid history"
-  on public.bid_history for select using (true);
-
--- Full access for service_role (Safe Drop & Recreate)
 drop policy if exists "Full access for service role on boards" on public.boards;
-create policy "Full access for service role on boards"
-  on public.boards for all using (auth.role() = 'service_role');
-
 drop policy if exists "Full access for service role on participants" on public.participants;
-create policy "Full access for service role on participants"
-  on public.participants for all using (auth.role() = 'service_role');
-
 drop policy if exists "Full access for service role on bid_history" on public.bid_history;
-create policy "Full access for service role on bid_history"
-  on public.bid_history for all using (auth.role() = 'service_role');
-
 drop policy if exists "Full access for service role on webhooks" on public.webhooks;
-create policy "Full access for service role on webhooks"
-  on public.webhooks for all using (auth.role() = 'service_role');
+drop policy if exists "Full access on boards" on public.boards;
+drop policy if exists "Full access on participants" on public.participants;
+drop policy if exists "Full access on bid_history" on public.bid_history;
+drop policy if exists "Full access on webhooks" on public.webhooks;
+
+-- Universal policies for RankHub application (auth & security handled by Next.js backend & ADMIN_SECRET)
+create policy "Full access on boards" on public.boards for all using (true) with check (true);
+create policy "Full access on participants" on public.participants for all using (true) with check (true);
+create policy "Full access on bid_history" on public.bid_history for all using (true) with check (true);
+create policy "Full access on webhooks" on public.webhooks for all using (true) with check (true);
 
 -- 7. ENABLE REALTIME STREAMING (Safe Publication Check)
 do $$
