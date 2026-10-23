@@ -250,9 +250,11 @@ export async function saveBoard(board: Board): Promise<Board> {
       const { error } = await supabase.from("boards").upsert(boardToRow(updatedBoard));
       if (error) {
         console.error("Supabase saveBoard error:", error.message, error.details);
+        throw new Error(`Database error: ${error.message}`);
       }
     } catch (err) {
-      console.warn("Supabase saveBoard failed:", err);
+      console.error("Supabase saveBoard failed:", err);
+      throw err;
     }
   }
 
@@ -276,9 +278,11 @@ export async function deleteBoard(id: string): Promise<boolean> {
       const { error } = await supabase.from("boards").delete().eq("id", id);
       if (error) {
         console.error("Supabase deleteBoard error:", error.message, error.details);
+        throw new Error(`Database error: ${error.message}`);
       }
     } catch (err) {
-      console.warn("Supabase deleteBoard failed:", err);
+      console.error("Supabase deleteBoard failed:", err);
+      throw err;
     }
   }
 
@@ -329,6 +333,7 @@ export async function saveParticipant(
       const { error } = await supabase.from("participants").upsert(participantToRow(updatedParticipant));
       if (error) {
         console.error("Supabase saveParticipant error:", error.message, error.details);
+        throw new Error(`Database error: ${error.message}`);
       }
 
       // Point 1: Record to bid_history table for auction audit trail
@@ -343,7 +348,8 @@ export async function saveParticipant(
         });
       }
     } catch (err) {
-      console.warn("Supabase saveParticipant failed:", err);
+      console.error("Supabase saveParticipant failed:", err);
+      throw err;
     }
   }
 

@@ -129,6 +129,7 @@ export function AdminBoardModal({
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isSlugTouched, setIsSlugTouched] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -153,8 +154,6 @@ export function AdminBoardModal({
   }, [isOpen, boardToEdit]);
 
   if (!isOpen) return null;
-
-  const [isSlugTouched, setIsSlugTouched] = useState(false);
 
   const handleTitleChange = (val: string) => {
     setTitle(val);
