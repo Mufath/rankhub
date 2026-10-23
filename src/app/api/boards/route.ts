@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAllBoards, getPublicBoards, saveBoard } from "@/lib/storage";
+import { getAllBoards, getPublicBoards, saveBoard, getBoardBySlug } from "@/lib/storage";
 import { isAdminAuthorized } from "@/lib/auth";
 import { Board } from "@/types";
 
@@ -39,10 +39,16 @@ export async function POST(request: NextRequest) {
     }
 
     // Clean slug
-    const slug = body.slug
+    let slug = body.slug
       .toLowerCase()
       .trim()
       .replace(/[^a-z0-9_-]/g, "-");
+
+    // Ensure slug uniqueness across boards
+    const existingBoard = await getBoardBySlug(slug);
+    if (existingBoard) {
+      slug = `${slug}-${Date.now().toString(36)}`;
+    }
 
     const newBoard: Board = {
       id: body.id || `board-${Date.now()}`,

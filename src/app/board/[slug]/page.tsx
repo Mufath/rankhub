@@ -3,6 +3,9 @@ import { getBoardBySlug, getParticipantsByBoardId, getAllBoards } from "@/lib/st
 import { sortAndRankParticipants } from "@/lib/utils";
 import { RankHubLeaderboard } from "@/components/rankhub-leaderboard";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 interface PageProps {
   params: Promise<{ slug: string }>;
 }

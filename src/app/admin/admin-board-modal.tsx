@@ -147,15 +147,18 @@ export function AdminBoardModal({
       setAntiSnipingThresholdSec(boardToEdit?.config?.antiSnipingThresholdSec ?? 60);
       setAntiSnipingExtensionSec(boardToEdit?.config?.antiSnipingExtensionSec ?? 120);
       setWebhookUrl(boardToEdit?.config?.webhookUrl || "");
+      setIsSlugTouched(Boolean(boardToEdit));
       setError(null);
     }
   }, [isOpen, boardToEdit]);
 
   if (!isOpen) return null;
 
+  const [isSlugTouched, setIsSlugTouched] = useState(false);
+
   const handleTitleChange = (val: string) => {
     setTitle(val);
-    if (!isEditing && (!slug || slug === title.toLowerCase().replace(/[^a-z0-9]/g, "-"))) {
+    if (!isEditing && !isSlugTouched) {
       setSlug(
         val
           .toLowerCase()
@@ -292,7 +295,10 @@ export function AdminBoardModal({
                 required
                 placeholder="lelang-subsecond-b11"
                 value={slug}
-                onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, "-"))}
+                onChange={(e) => {
+                  setIsSlugTouched(true);
+                  setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, "-"));
+                }}
                 className="w-full px-3.5 py-2.5 bg-white/90 border border-amber-900/15 rounded-2xl text-xs font-mono font-bold text-amber-900 focus:outline-none focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-300/40 transition-all shadow-xs"
               />
             </div>
