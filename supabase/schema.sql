@@ -78,11 +78,13 @@ begin
 end;
 $$ language plpgsql;
 
-create or replace trigger set_boards_updated_at
+drop trigger if exists set_boards_updated_at on public.boards;
+create trigger set_boards_updated_at
 before update on public.boards
 for each row execute function public.handle_updated_at();
 
-create or replace trigger set_participants_updated_at
+drop trigger if exists set_participants_updated_at on public.participants;
+create trigger set_participants_updated_at
 before update on public.participants
 for each row execute function public.handle_updated_at();
 
@@ -92,33 +94,50 @@ alter table public.participants enable row level security;
 alter table public.bid_history enable row level security;
 alter table public.webhooks enable row level security;
 
--- Public read access policies
+-- Public read access policies (Safe Drop & Recreate)
+drop policy if exists "Allow public read access to active public boards" on public.boards;
 create policy "Allow public read access to active public boards"
   on public.boards for select using (visibility = 'PUBLIC' or true);
 
+drop policy if exists "Allow public read access to participants" on public.participants;
 create policy "Allow public read access to participants"
   on public.participants for select using (true);
 
+drop policy if exists "Allow public read access to bid history" on public.bid_history;
 create policy "Allow public read access to bid history"
   on public.bid_history for select using (true);
 
--- Full access for service_role
+-- Full access for service_role (Safe Drop & Recreate)
+drop policy if exists "Full access for service role on boards" on public.boards;
 create policy "Full access for service role on boards"
   on public.boards for all using (auth.role() = 'service_role');
 
+drop policy if exists "Full access for service role on participants" on public.participants;
 create policy "Full access for service role on participants"
   on public.participants for all using (auth.role() = 'service_role');
 
+drop policy if exists "Full access for service role on bid_history" on public.bid_history;
 create policy "Full access for service role on bid_history"
   on public.bid_history for all using (auth.role() = 'service_role');
 
+drop policy if exists "Full access for service role on webhooks" on public.webhooks;
 create policy "Full access for service role on webhooks"
   on public.webhooks for all using (auth.role() = 'service_role');
 
--- 7. ENABLE REALTIME STREAMING (Point 2)
-begin;
-  -- Drop if existing to avoid duplicate errors
-  alter publication supabase_realtime add table public.boards;
-  alter publication supabase_realtime add table public.participants;
-commit;
+-- 7. ENABLE REALTIME STREAMING (Safe Publication Check)
+do $$
+begin
+  if not exists (
+    select 1 from pg_publication_tables 
+    where pubname = 'supabase_realtime' and tablename = 'boards'
+  ) then
+    alter publication supabase_realtime add table public.boards;
+  end if;
 
+  if not exists (
+    select 1 from pg_publication_tables 
+    where pubname = 'supabase_realtime' and tablename = 'participants'
+  ) then
+    alter publication supabase_realtime add table public.participants;
+  end if;
+end $$;
